@@ -21,7 +21,7 @@ public class CityController {
 
     @GetMapping("/{cityId}")
     public City getCitybyId(@PathVariable Integer cityId) {// parametro de la url
-        return new City();
+        return this.cityService.findById(cityId);
     }
 
     @PostMapping("/")
