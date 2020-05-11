@@ -29,4 +29,8 @@ public class ProvinceService {
         }
         return provinceRepository.findbyName(name);// puede recibir un sort
     }
+
+    public Province findById(Integer id) {
+        return provinceRepository.findById(id).get();
+    }
 }

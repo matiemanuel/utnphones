@@ -24,7 +24,7 @@ public class ProvinceController {
     @GetMapping("/{provinceId}")
 
     public Province getProvincebyId(@PathVariable Integer provinceId){// parametro de la url
-        return new Province();
+        return this.provinceService.findById(provinceId);
     }
 
     @PostMapping("/")
