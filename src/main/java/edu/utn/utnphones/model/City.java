@@ -6,11 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Entity
+@Entity(name = "City")
 @Table(name = "Cities")
 public class City {
 
@@ -23,5 +24,8 @@ public class City {
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonBackReference
     private Province province;
+
+    @OneToMany(mappedBy = "City")
+    private List<Tariff> tariffs;
 
 }
