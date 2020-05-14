@@ -1,6 +1,7 @@
 package edu.utn.utnphones.controller;
 
 
+import edu.utn.utnphones.exceptions.CityNotExistsException;
 import edu.utn.utnphones.model.City;
 import edu.utn.utnphones.service.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class CityController {
     }
 
     @GetMapping("/{cityId}")
-    public City getCitybyId(@PathVariable Integer cityId) {// parametro de la url
+    public City getCitybyId(@PathVariable Integer cityId) throws CityNotExistsException {// parametro de la url
         return this.cityService.findById(cityId);
     }
 

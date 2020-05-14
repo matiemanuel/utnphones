@@ -1,13 +1,12 @@
 package edu.utn.utnphones.service;
 
+import edu.utn.utnphones.exceptions.CityNotExistsException;
 import edu.utn.utnphones.model.City;
 import edu.utn.utnphones.repository.CityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.Objects.isNull;
 
@@ -27,13 +26,12 @@ public class CityService {
 
     public List<City> getAll(String name) {
         if (isNull(name)) {
-            return cityRepository.findAll();// puede recibir un sort
+            return cityRepository.findAll();
         }
-        return cityRepository.findbyName(name);// puede recibir un sort
+        return cityRepository.findbyName(name);
     }
 
-    public City findById(Integer id){
-        Optional<City> optional = cityRepository.findById(id);
-        return optional.get();
+    public City findById(Integer id) throws CityNotExistsException {
+        return cityRepository.findById(id).orElseThrow(CityNotExistsException::new);
     }
 }

@@ -10,14 +10,15 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Entity
+@Entity(name = "Province")
 @Table(name = "Provinces")
 public class Province {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_province")
     private Integer id;
+
+    @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "province")
-    private List<City> cities;
 }

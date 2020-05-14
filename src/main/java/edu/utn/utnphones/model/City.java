@@ -1,12 +1,10 @@
 package edu.utn.utnphones.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,15 +15,15 @@ public class City {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_city")
     private Integer id;
+
     private String name;
+
     private String prefix;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JsonBackReference
+    @JoinColumn(name = "id_province", referencedColumnName = "id_province")
     private Province province;
-
-    @OneToMany(mappedBy = "City")
-    private List<Tariff> tariffs;
 
 }

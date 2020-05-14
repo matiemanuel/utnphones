@@ -2,6 +2,7 @@ package edu.utn.utnphones.controller;
 
 
 
+import edu.utn.utnphones.exceptions.ProvinceNotExistsException;
 import edu.utn.utnphones.model.Province;
 import edu.utn.utnphones.service.ProvinceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class ProvinceController {
 
     @GetMapping("/{provinceId}")
 
-    public Province getProvincebyId(@PathVariable Integer provinceId){// parametro de la url
+    public Province getProvincebyId(@PathVariable Integer provinceId) throws ProvinceNotExistsException {
         return this.provinceService.findById(provinceId);
     }
 
@@ -33,8 +34,8 @@ public class ProvinceController {
     }
 
     @GetMapping("/")
-    public List<Province> getAll(@RequestParam(required = false) String name){// para tener acceso a un parametro desde la url
-        return provinceService.getAll(name);                                      // required false hace q el parametro sea opcional
+    public List<Province> getAll(@RequestParam(required = false) String name){
+        return provinceService.getAll(name);
     }
 
 }

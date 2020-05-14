@@ -1,6 +1,5 @@
 package edu.utn.utnphones.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,19 +13,24 @@ import javax.persistence.*;
 @Table(name = "Tariffs")
 public class Tariff {
 
+    @Column(name = "id_tariff")
     @Id
     @GeneratedValue
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JsonBackReference
+
+    @ManyToOne
+    @JoinColumn(name = "id_origin_city", referencedColumnName = "id_city")
     private City origin_city;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "id_destiny_city", referencedColumnName = "id_city")
     private City destiny_city;
 
+    @Column(name = "cost")
     private Double cost;
+
+    @Column(name = "price")
     private Double price;
 
 }

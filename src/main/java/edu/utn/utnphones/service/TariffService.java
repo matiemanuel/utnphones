@@ -1,5 +1,6 @@
 package edu.utn.utnphones.service;
 
+import edu.utn.utnphones.exceptions.TariffNotExistsException;
 import edu.utn.utnphones.model.Tariff;
 import edu.utn.utnphones.repository.TariffRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,7 @@ public class TariffService {
         return tariffRepository.findAll();
     }
 
-    public Tariff findById(Integer id) {
-        Optional<Tariff> optional = tariffRepository.findById(id);
-        return optional.get();
+    public Tariff findById(Integer id) throws TariffNotExistsException {
+        return tariffRepository.findById(id).orElseThrow(TariffNotExistsException::new);
     }
 }

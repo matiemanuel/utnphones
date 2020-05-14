@@ -1,6 +1,7 @@
 package edu.utn.utnphones.controller;
 
 
+import edu.utn.utnphones.exceptions.TariffNotExistsException;
 import edu.utn.utnphones.model.Tariff;
 import edu.utn.utnphones.service.TariffService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class TariffController {
     }
 
     @GetMapping("/{tariffId}")
-    public Tariff getTariffbyId(@PathVariable Integer tariffId) {// parametro de la url
+    public Tariff getTariffbyId(@PathVariable Integer tariffId) throws TariffNotExistsException {
         return this.tariffService.findById(tariffId);
     }
 
