@@ -1,5 +1,6 @@
 package edu.utn.utnphones.service;
 
+import edu.utn.utnphones.exceptions.ProvinceNotExistsException;
 import edu.utn.utnphones.model.Province;
 import edu.utn.utnphones.repository.ProvinceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,13 @@ public class ProvinceService {
 
     public List<Province> getAll(String name) {
         if (isNull(name)){
-            return provinceRepository.findAll();// puede recibir un sort
+            return provinceRepository.findAll();
         }
-        return provinceRepository.findbyName(name);// puede recibir un sort
+        return provinceRepository.findbyName(name);
     }
+
+    public Province findById(Integer id) throws ProvinceNotExistsException {
+        return provinceRepository.findById(id).orElseThrow(ProvinceNotExistsException::new);
+    }
+
 }
