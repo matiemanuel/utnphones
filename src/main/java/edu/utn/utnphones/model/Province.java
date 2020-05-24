@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @Entity(name = "Province")
-@Table(name = "Provinces")
+@Table(name = "provinces")
 public class Province {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,5 +20,9 @@ public class Province {
 
     @Column(name = "name")
     private String name;
+
+    // lista de ciudades
+    @OneToMany(mappedBy = "province")
+    private List<City> cities;
 
 }
