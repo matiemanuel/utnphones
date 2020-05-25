@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface CityRepository extends JpaRepository<City, Integer> {
 
-    @Query(value = "Select * from City where name = ?1", nativeQuery = true)
+    @Query(value = "Select * from city where name = ?1", nativeQuery = true)
     public List<City> findbyName(String name);
 
     public Optional<City> findById(Integer id);

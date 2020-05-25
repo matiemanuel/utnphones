@@ -145,6 +145,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `calls` (
   `id_call` INT NOT NULL AUTO_INCREMENT,
   `duration` INT NULL,
+  `id_tariff` INT NULL,
   `id_invoice` INT NULL,
   `origin_number` VARCHAR(15) NULL,
   `destiny_number` VARCHAR(15) NULL,
@@ -163,10 +164,10 @@ CREATE TABLE IF NOT EXISTS `calls` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-INSERT INTO `calls` VALUES (null,150, null, '2234545456','2262545456', 4.5, null),
-(null,180, null, '2262545456','2234545456', 5.7, null),
-(null,280, null, '123454545678','2234545456', 7.7, null),
-(null,230, null, '2234545456','12345678', 4.5, null);
+INSERT INTO `calls` VALUES (null,150, 1, null, '2234545456','2262545456', 4.5, null),
+(null,180, 2, null, '2262545456','2234545456', 5.7, null),
+(null,280, 4, null, '123454545678','2234545456', 7.7, null),
+(null,230, 3, null, '2234545456','12345678', 4.5, null);
 
 
 SET SQL_MODE=@OLD_SQL_MODE;

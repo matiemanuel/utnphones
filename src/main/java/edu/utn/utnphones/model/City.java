@@ -1,5 +1,6 @@
 package edu.utn.utnphones.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Data
 @Entity(name = "City")
-@Table(name = "Cities")
+@Table(name = "cities")
 public class City {
 
     @Id
@@ -22,8 +23,9 @@ public class City {
 
     private String prefix;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_province", referencedColumnName = "id_province")
+    @ManyToOne(targetEntity = Province.class, fetch = FetchType.EAGER)
+    @JsonBackReference
+    @JoinColumn(name = "fk_id_province", referencedColumnName = "id_province")
     private Province province;
 
 }
