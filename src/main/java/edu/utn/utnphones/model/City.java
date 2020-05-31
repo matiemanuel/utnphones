@@ -20,7 +20,7 @@ public class City {
     @Column(name = "id_city")
     private Integer id;
 
-    @Column(name = "city_name")
+    @Column(name = "name")
     private String name;
 
     @Column(name = "prefix")

@@ -25,9 +25,9 @@ INSERT INTO `provinces` (name) VALUES ('Buenos Aires'), ('Cordoba'), ('San Luis'
 -- -----------------------------------------------------
 -- Table `cities`
 -- -----------------------------------------------------
-/*CREATE TABLE IF NOT EXISTS `cities` (
+CREATE TABLE IF NOT EXISTS `cities` (
  `id_city` INT NOT NULL AUTO_INCREMENT,
-  `city_name` VARCHAR(45),
+  `name` VARCHAR(45),
   `prefix` VARCHAR(5),
   `id_province` INT,
   PRIMARY KEY (`id_city`),
@@ -36,17 +36,9 @@ INSERT INTO `provinces` (name) VALUES ('Buenos Aires'), ('Cordoba'), ('San Luis'
     REFERENCES `provinces` (`id_province`)
     ON DELETE SET NULL
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;*/
+ENGINE = InnoDB;
 
-create table if not exists cities (
-	id_city int not null auto_increment,
-    city_name varchar(45),
-    prefix varchar(5),
-    id_province int not null,
-    primary key (id_city),
-    constraint fk_id_province foreign key (id_province) references provinces (id_province));
-
-INSERT INTO cities (city_name, prefix, id_province) VALUES ('Mar del Plata', '223', 1),('Necochea', '2262', 1),
+INSERT INTO cities (name, prefix, id_province) VALUES ('Mar del Plata', '223', 1),('Necochea', '2262', 1),
 ('Cordobita', '123', 2), ('Mar Chiquita', '2234', 1);
 
 -- -----------------------------------------------------
