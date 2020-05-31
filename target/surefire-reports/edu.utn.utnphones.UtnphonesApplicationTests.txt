@@ -1,0 +1,10 @@
+-------------------------------------------------------------------------------
+Test set: edu.utn.utnphones.UtnphonesApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 6.436 s <<< FAILURE! - in edu.utn.utnphones.UtnphonesApplicationTests
+contextLoads  Time elapsed: 0.002 s  <<< ERROR!
+java.lang.IllegalStateException: Failed to load ApplicationContext
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Invocation of init method failed; nested exception is javax.persistence.PersistenceException: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.tool.schema.spi.SchemaManagementException: Attempt to resolve foreign key metadata from JDBC metadata failed to find column mappings for foreign key named [fk_id_destiny_city]
+Caused by: javax.persistence.PersistenceException: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.tool.schema.spi.SchemaManagementException: Attempt to resolve foreign key metadata from JDBC metadata failed to find column mappings for foreign key named [fk_id_destiny_city]
+Caused by: org.hibernate.tool.schema.spi.SchemaManagementException: Attempt to resolve foreign key metadata from JDBC metadata failed to find column mappings for foreign key named [fk_id_destiny_city]
+

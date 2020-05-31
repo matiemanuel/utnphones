@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.mapping.Join;
 
 import javax.persistence.*;
 
@@ -19,13 +20,14 @@ public class City {
     @Column(name = "id_city")
     private Integer id;
 
+    @Column(name = "city_name")
     private String name;
 
+    @Column(name = "prefix")
     private String prefix;
 
-    @ManyToOne(targetEntity = Province.class, fetch = FetchType.EAGER)
-    @JsonBackReference
-    @JoinColumn(name = "fk_id_province", referencedColumnName = "id_province")
+    @ManyToOne
+    @JoinColumn(name = "id_province")
     private Province province;
 
 }

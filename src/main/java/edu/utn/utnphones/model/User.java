@@ -49,11 +49,9 @@ public class User {
     @JoinColumn(name = "fk_id_city", referencedColumnName = "id_city")
     private City city;
 
-
-
     //ENUM
     public enum Type {
-        CLIENT, EMPLOYEE;
+        client, employee;
     }
 
     @Enumerated(EnumType.STRING)

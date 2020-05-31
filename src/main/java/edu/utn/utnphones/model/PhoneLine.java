@@ -33,12 +33,13 @@ public class PhoneLine {
 
 
     @ManyToOne(targetEntity = City.class, fetch = FetchType.EAGER)
+    @JsonBackReference
     @JoinColumn(name = "fk_id_city", referencedColumnName = "id_city")
     private City city;
 
     //ENUMS
     public enum Status {
-        ACTIVE, DISABLED;
+        active, disabled;
     }
 
     @Enumerated(EnumType.STRING)
@@ -47,7 +48,7 @@ public class PhoneLine {
     private Status phone_line_status;
 
     public enum Type {
-        MOBILE, RESIDENCIAL;
+        mobile, residential;
     }
 
     @Enumerated(EnumType.STRING)
@@ -56,7 +57,7 @@ public class PhoneLine {
     private Type phone_line_type;
 
     // lista de facturas
-    @OneToMany(mappedBy = "phone_line")
+    @OneToMany(mappedBy = "phoneline")
     private List<Invoice> invoices;
 
 
