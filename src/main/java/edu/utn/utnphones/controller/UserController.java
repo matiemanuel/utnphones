@@ -1,6 +1,7 @@
 package edu.utn.utnphones.controller;
 
 
+import edu.utn.utnphones.projections.MostCalledProjection;
 import edu.utn.utnphones.exceptions.UserNotExistsException;
 import edu.utn.utnphones.model.User;
 import edu.utn.utnphones.service.UserService;
@@ -34,4 +35,7 @@ public class UserController {
     public List<User> getAll(@RequestParam(required = false) String name) {
         return userService.getAll(name);
     }
+
+    @GetMapping("/{userId}/mostCalled")
+    public MostCalledProjection getMostCalledFromUser (@PathVariable Integer userId){ return userService.getMostCalledFromUser(userId);}
 }

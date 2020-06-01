@@ -5,9 +5,12 @@ import edu.utn.utnphones.exceptions.CityNotExistsException;
 import edu.utn.utnphones.model.City;
 import edu.utn.utnphones.service.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.ws.Response;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/cities")
@@ -31,8 +34,12 @@ public class CityController {
     }
 
     @GetMapping("/")
-    public List<City> getAll(@RequestParam(required = false) String name) {
-        return cityService.getAll(name);
+    public ResponseEntity<List<City>> getAll(@RequestParam(required = false) String name) {
+        List<City> list = this.cityService.getAll(name);
+        if (list.size()==0){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(list);
     }
 
 }
