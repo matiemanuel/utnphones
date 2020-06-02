@@ -1,9 +1,9 @@
 package edu.utn.utnphones.service;
 
-import edu.utn.utnphones.exceptions.CityNotExistsException;
-
+import edu.utn.utnphones.exceptions.NoCallsException;
 import edu.utn.utnphones.exceptions.UserNotExistsException;
 import edu.utn.utnphones.model.User;
+import edu.utn.utnphones.projections.MostDurationProjection;
 import edu.utn.utnphones.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,8 +22,8 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public void addUser(User newUser) {
-        userRepository.save(newUser);
+    public User addUser(User newUser) {
+        return userRepository.save(newUser);
     }
 
     public List<User> getAll(String name) {
@@ -35,5 +35,14 @@ public class UserService {
 
     public User findById(Integer id) throws UserNotExistsException {
         return userRepository.findById(id).orElseThrow(UserNotExistsException::new);
+    }
+
+    public MostDurationProjection getMostDurationFromUser() throws NoCallsException {
+        MostDurationProjection mdp =userRepository.getMostDurationFromUser();
+        if( mdp == null){
+            throw new NoCallsException();
+        }else{
+            return mdp;
+        }
     }
 }

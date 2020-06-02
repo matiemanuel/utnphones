@@ -6,6 +6,8 @@ import edu.utn.utnphones.repository.CallRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 import static java.util.Objects.isNull;
@@ -30,7 +32,9 @@ public class CallService {
         }
         return callRepository.findbyOriginNumber(origin_number);
     }
-
+    public List<Call> getBetweenDates(String origin_number, Date from, Date to) {
+        return callRepository.getByOriginNumberAndDates(origin_number, from, to);
+    }
     public Call findById(Integer id) throws CallNotExistsException {
         return callRepository.findById(id).orElseThrow(CallNotExistsException::new);
     }

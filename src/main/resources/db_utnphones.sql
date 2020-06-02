@@ -2,19 +2,15 @@
 -- Wed May 13 16:29:29 2020
 -- Model: New Model    Version: 1.0
 -- MySQL Workbench Forward Engineering
-
-SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
-SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
-SET GLOBAL event_scheduler = ON; -- Necesario para crear eventos automaticos.
 SET GLOBAL TIME_ZONE= '-3:00'; -- zona horaria BsAs/Arg
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
 -- Schema utnphones
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `utnphones` DEFAULT CHARACTER SET utf8 ;
-USE `utnphones` ;
+CREATE SCHEMA IF NOT EXISTS `utnphonesSchema` DEFAULT CHARACTER SET utf8 ;
+create database if not exists utnphones;
+USE utnphones;
 
 -- -----------------------------------------------------
 -- Table `provinces`
@@ -25,15 +21,15 @@ CREATE TABLE IF NOT EXISTS `provinces` (
   PRIMARY KEY (`id_province`))
 ENGINE = InnoDB;
 
-INSERT INTO `provinces` VALUES (null,'Buenos Aires'),(null,'Cordoba'),(null,'San Luis');
+INSERT INTO `provinces` (name) VALUES ('Buenos Aires'), ('Cordoba'), ('San Luis');
 -- -----------------------------------------------------
 -- Table `cities`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `cities` (
-  `id_city` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(45) NULL,
-  `prefix` VARCHAR(5) NULL,
-  `id_province` INT NULL,
+ `id_city` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45),
+  `prefix` VARCHAR(5),
+  `id_province` INT,
   PRIMARY KEY (`id_city`),
   CONSTRAINT `fk_id_province`
     FOREIGN KEY (`id_province`)
@@ -42,8 +38,8 @@ CREATE TABLE IF NOT EXISTS `cities` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-INSERT INTO `cities` VALUES (null,'Mar del Plata', '223', 1),(null,'Necochea', '2262', 1),
-(null,'Cordobita', '123', 2), (null,'Mar Chiquita', '2234', 1);
+INSERT INTO cities (name, prefix, id_province) VALUES ('Mar del Plata', '223', 1),('Necochea', '2262', 1),
+('Cordobita', '123', 2), ('Mar Chiquita', '2234', 1);
 
 -- -----------------------------------------------------
 -- Table `tariffs`
@@ -62,13 +58,13 @@ CREATE TABLE IF NOT EXISTS `tariffs` (
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_id_destiny_city`
     FOREIGN KEY (`id_destiny_city`)
-    REFERENCES `mydb`.`cities` (`id_city`)
+    REFERENCES `cities` (`id_city`)
     ON DELETE SET NULL
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-INSERT INTO `tariffs` VALUES (null,1,2, 0.3, 0.1),(null,2,1, 0.3, 0.1),
-(null,1,3, 0.5, 0.2),(null,3,1, 0.6, 0.3);
+INSERT INTO `tariffs` (id_origin_city, id_destiny_city, price, cost) VALUES (1,2, 0.3, 0.1),(2,1, 0.3, 0.1),
+(1,3, 0.5, 0.2),(3,1, 0.6, 0.3);
 -- -----------------------------------------------------
 -- Table `users`
 -- -----------------------------------------------------
@@ -89,9 +85,9 @@ CREATE TABLE IF NOT EXISTS `users` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-INSERT INTO `users` VALUES (null,'Juan', 'Perez', '12345678', 'juan@gmail.com','psw',1,'client'),
-(null,'Martin', 'Lopez','12345678', 'martin@gmail.com','psw',2,'client'),
-(null,'Facundo', 'Martinez', '12345678', 'facundo@gmail.com','psw',3,'client');
+INSERT INTO `users` (name, lastname, dni, email, password, id_city, type) VALUES ('Juan', 'Perez', '12345678', 'juan@gmail.com','psw',1,'client'),
+('Martin', 'Lopez','12345678', 'martin@gmail.com','psw',2,'client'),
+('Facundo', 'Martinez', '12345678', 'facundo@gmail.com','psw',3,'client');
 -- -----------------------------------------------------
 -- Table `phone_lines`
 -- -----------------------------------------------------
@@ -115,9 +111,9 @@ CREATE TABLE IF NOT EXISTS `phone_lines` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-INSERT INTO `phone_lines` VALUES (null,'2234545456', 1, 1, 'mobile','active'),
-(null,'2262545456', 2, 2, 'mobile','active'),
-(null,'1234545456', 3, 3, 'mobile','active');
+INSERT INTO `phone_lines` (line_number, id_user, id_city, type, status) VALUES ('2234545456', 1, 1, 'mobile','active'),
+('2262545456', 2, 2, 'mobile','active'),
+('1234545456', 3, 3, 'mobile','active');
 -- -----------------------------------------------------
 -- Table `invoices`
 -- -----------------------------------------------------
@@ -151,11 +147,6 @@ CREATE TABLE IF NOT EXISTS `calls` (
   `tariff_price` DOUBLE NULL,
   `call_date` DATETIME NULL,
   PRIMARY KEY (`id_call`),
-  CONSTRAINT `fk_id_tariff`
-    FOREIGN KEY (`id_tariff`)
-    REFERENCES `tariffs` (`id_tariff`)
-    ON DELETE SET NULL
-    ON UPDATE NO ACTION,
   CONSTRAINT `fk_id_bill`
     FOREIGN KEY (`id_invoice`)
     REFERENCES `invoices` (`id_invoice`)
@@ -163,146 +154,16 @@ CREATE TABLE IF NOT EXISTS `calls` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-INSERT INTO `calls` VALUES (null,150, null, '2234545456','2262545456', 4.5, null),
-(null,180, null, '2262545456','2234545456', 5.7, null),
-(null,280, null, '123454545678','2234545456', 7.7, null),
-(null,230, null, '2234545456','12345678', 4.5, null);
+INSERT INTO `calls` (duration, id_invoice, origin_number, destiny_number, tariff_price, call_date) VALUES (150, null, '2234545456','2262545456', 4.5, null),
+(180, null, '2262545456','2234545456', 5.7, null),
+(280, null, '123454545678','2234545456', 7.7, null),
+(230, null, '2234545456','12345678', 4.5, null);
 
 
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+select * from provinces;
+select * from cities;
 
-
--------------------------------------------------
--- Hay un proceso automático que todos los 1º de cada mes, corre automáticamente 
--- y verifica las llamadas no facturadas y genera una nueva factura con un vencimiento 
--- a 15 días. Debemos guardar solo el estado de si la factura esta pagao no
-
-delimiter \\
-CREATE EVENT `e_check_calls` -- 													waiting sp
-ON SCHEDULE EVERY 1 MONTH STARTS '2020-01-01 00:00:01'
-DO 
-BEGIN
--- sp_verify_calls_&_generate_bills
-END\\
-delimiter ;
-
-DELIMITER //
-CREATE PROCEDURE `sp_verify_calls_&_generate_bills` () -- 								very incomplete
-BEGIN
-  DECLARE p_price_cost DOUBLE;
-  DECLARE p_total_price DOUBLE;
-  DECLARE p_origin_number VARCHAR(15);
-  
-  
-  
-  DECLARE calls_cursor CURSOR
-  FOR
-	SELECT * FROM calls where id_invoice is NULL; --  || call_date = CURDATE(); 
-  OPEN calls_cursor;
-  
-  -- Procedure sp_add_invoice
--- tengo que recorrer la lista de calls pero en base al numero de telefono de origen
--- tengo que agragar una sola factura, osea que tengo que agrupar por numero, contar 
--- cuantas veces se repite y sumar los totales de cada llamada
--- USAR TRANSACTION
-  
-END //
-
-
-CREATE PROCEDURE `sp_add_invoice` (IN p_price_cost DOUBLE, IN p_total_price DOUBLE, -- 			INCOMPLETE
-IN p_origin_number VARCHAR(15) )
-BEGIN
-DECLARE id_origin_phone_line INT;
-DECLARE date_invoice date;
-DECLARE expiration_date date;
-DECLARE paid BOOLEAN;
-DECLARE number_of_calls INT;
-
-select id_phone_line into id_origin_phone_line from phone_lines where line_number = p_origin_phone;
-set date_invoice = (select now());
-set expiration_date= DATE_ADD(NOW(),INTERVAL 15 DAY); -- agrega 15 dias a partir de este dia
-set paid = false;
-set number_of_calls = 1;-- revisarrrrrrrrrr
-
-insert into invoices values (null, number_of_calls, p_price_cost, p_total_price, date_invoice,
-expiration_date, id_origin_phone_line, paid);
-
-END //
-
-
--- Se debe permitir también el agregado de llamadas, con un login especial, 
--- ya que este método de nuestra API será llamado nada más que por el área deinfraestructura
--- cada vez que se produzca una llamada.  El área de infraestructurasólo enviará la siguiente
--- información de llamadas: Número de origen, Número de destino, Duración de la llamada
-DELIMITER //
-CREATE PROCEDURE `sp_add_call` (IN p_origin_phone VARCHAR(20), IN p_destiny_phone VARCHAR(20),-- ALMOST DONE
-IN pduration int)
-BEGIN
-
-DECLARE origin_phone_line_id int;
-DECLARE destiny_phone_line_id int;
-
-DECLARE origin_city_id int;
-DECLARE destiny_city_id int;
-
-DECLARE origin_prefix int;
-DECLARE destiny_prefix int;
-
-DECLARE tariff float;
-DECLARE tariff_id int;
-DECLARE total_price float;
-
-DECLARE date_call datetime;
-
-
-select id_phone_line into origin_phone_line_id from phone_lines where line_number = p_origin_phone;
-select id_phone_line into destiny_phone_line_id from phone_lines where line_number = p_destiny_phone;
-
-set origin_city_id= fn_id_city_from_prefix(p_origin_phone);
-set destiny_city_id= fn_id_city_from_prefix(p_destiny_phone);
-
-select price into tariff from tariffs where id_origin_city= origin_city_id and id_destiny_city= destiny_city_id;
-select id_tariff into tariff_id from tariffs where id_origin_city= origin_city_id and id_destiny_city= destiny_city_id;
-
-
-set total_price =  (pduration * (tariff/60));
-set date_call = (select now());
-
--- VERIFICAR Y DEFINIR VARIABLES DE LA TABLA CALLS
--- insert into calls 
--- values(origin_phone_line_id, destiny_phone_line_id, tariff, duration, total_price, date_call);
-  
-END //
-
-
--- Funcion que permite obtener el prefijo de un numero de telefono
--- primero debo revisar que coincida con la ciudad con mas digitos en su prefijo
--- primero ciudad con prefijo de 4 digitos y desp de 3 digitos
-DELIMITER //
-CREATE FUNCTION fn_id_city_from_prefix(origin_number VARCHAR(15)) RETURNS INTEGER-- 		TESTED & RUNNING
-BEGIN
-declare number_prefix int;
-declare city_id int;
-declare digits int;
-
-set digits= 7;-- para agarrar 4 primeros digitos
-
-WHILE city_id is null DO
-
-set number_prefix= (select reverse(substring(reverse(origin_number),digits)));
-select id_city into city_id from cities where prefix = number_prefix;
-
-	IF city_id is null THEN
-        SET digits = digits + 1; -- si no lo encontro, sumo un digito para agarrar los 3 primeros
-    END IF;
-    
-end while;
-
-return city_id;
-END//
--- pruebas
-drop function fn_id_city_from_prefix;
-select fn_id_city_from_prefix('2234123123'); -- devuelve id marchiquita
-select fn_id_city_from_prefix('2235123123');-- devuelve id mdp
+select * from cities c
+join provinces p
+	on c.id_province = p.id_province;
+select * from users;

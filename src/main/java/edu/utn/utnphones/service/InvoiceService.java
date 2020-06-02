@@ -4,10 +4,11 @@ import edu.utn.utnphones.exceptions.InvoiceNotExistsException;
 import edu.utn.utnphones.model.Invoice;
 import edu.utn.utnphones.repository.InvoiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
+@Service
 public class InvoiceService {
     private final InvoiceRepository invoiceRepository;
 
