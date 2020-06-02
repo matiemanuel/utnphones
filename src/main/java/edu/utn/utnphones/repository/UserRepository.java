@@ -1,8 +1,9 @@
 package edu.utn.utnphones.repository;
 
 
-import edu.utn.utnphones.projections.MostCalledProjection;
 import edu.utn.utnphones.model.User;
+import edu.utn.utnphones.projections.MostCalledProjection;
+import edu.utn.utnphones.projections.UsersByCityProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -25,5 +26,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "order by count(c.destiny_number) desc limit 1) as mostCalled from users s\n" +
             "where s.id_user = ?1", nativeQuery = true)
     public MostCalledProjection getMostCalledFromUser(Integer userId);
+
+    @Query(value = "SELECT name, lastname, dni, email, password, id_city as cityId, id_user as userId, type  FROM users " +
+            "where id_city = ?1", nativeQuery = true)
+    public List<UsersByCityProjection> getUsersByCity(Integer cityId);
 
 }

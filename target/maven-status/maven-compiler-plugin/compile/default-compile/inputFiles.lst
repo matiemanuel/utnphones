@@ -29,8 +29,10 @@ C:\Users\Mati\Documents\GitHub\utnphones\src\main\java\edu\utn\utnphones\control
 C:\Users\Mati\Documents\GitHub\utnphones\src\main\java\edu\utn\utnphones\model\PhoneLine.java
 C:\Users\Mati\Documents\GitHub\utnphones\src\main\java\edu\utn\utnphones\repository\ProvinceRepository.java
 C:\Users\Mati\Documents\GitHub\utnphones\src\main\java\edu\utn\utnphones\service\ProvinceService.java
+C:\Users\Mati\Documents\GitHub\utnphones\src\main\java\edu\utn\utnphones\projections\UsersByCityProjection.java
 C:\Users\Mati\Documents\GitHub\utnphones\src\main\java\edu\utn\utnphones\repository\PhoneLineRepository.java
 C:\Users\Mati\Documents\GitHub\utnphones\src\main\java\edu\utn\utnphones\repository\TariffRepository.java
 C:\Users\Mati\Documents\GitHub\utnphones\src\main\java\edu\utn\utnphones\controller\PhoneLineController.java
+C:\Users\Mati\Documents\GitHub\utnphones\src\main\java\edu\utn\utnphones\projections\MostCalledProjection.java
 C:\Users\Mati\Documents\GitHub\utnphones\src\main\java\edu\utn\utnphones\exceptions\CityNotExistsException.java
 C:\Users\Mati\Documents\GitHub\utnphones\src\main\java\edu\utn\utnphones\repository\UserRepository.java
