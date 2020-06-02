@@ -27,7 +27,6 @@ public class PhoneLine {
     @JoinColumn(name = "id_user")
     private User user;
 
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_city")
     private City city;
@@ -50,8 +49,5 @@ public class PhoneLine {
     @NotNull
     @Column(name = "type")
     private Type phone_line_type;
-
-    @OneToMany(mappedBy = "phoneline")
-    private List<Invoice> invoices;
 
 }

@@ -1,9 +1,9 @@
 package edu.utn.utnphones.controller;
 
 
-import edu.utn.utnphones.projections.MostCalledProjection;
 import edu.utn.utnphones.exceptions.UserNotExistsException;
 import edu.utn.utnphones.model.User;
+import edu.utn.utnphones.projections.MostCalledProjection;
 import edu.utn.utnphones.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -37,5 +37,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/mostCalled")
-    public MostCalledProjection getMostCalledFromUser (@PathVariable Integer userId){ return userService.getMostCalledFromUser(userId);}
+    public MostCalledProjection getMostCalledFromUser(@PathVariable Integer userId) {
+        return userService.getMostCalledFromUser(userId);
+    }
 }

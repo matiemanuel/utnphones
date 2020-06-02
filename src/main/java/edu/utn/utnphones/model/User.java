@@ -56,14 +56,4 @@ public class User {
     @Column(name = "type")
     private Type user_type;
 
-
-    // lista de lineas de telefono
-    @OneToMany(mappedBy = "user")
-    private List<PhoneLine> phone_lines;
-
-
-
-
-
-
 }
