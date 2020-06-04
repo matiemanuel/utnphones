@@ -1,5 +1,6 @@
 package edu.utn.utnphones.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,13 +19,12 @@ public class Tariff {
     @GeneratedValue
     private Integer id;
 
-
     @ManyToOne
-    @JoinColumn(name = "id_origin_city", referencedColumnName = "id_city")
+    @JoinColumn(name = "id_origin_city")
     private City origin_city;
 
     @ManyToOne
-    @JoinColumn(name = "id_destiny_city", referencedColumnName = "id_city")
+    @JoinColumn(name = "id_destiny_city")
     private City destiny_city;
 
     @Column(name = "cost")

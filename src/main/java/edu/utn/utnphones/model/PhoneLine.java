@@ -1,6 +1,5 @@
 package edu.utn.utnphones.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,21 +23,18 @@ public class PhoneLine {
     private String line_number;
 
 
-    @ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
-    @JsonBackReference // este objeto user en realidad es una referecia.
-    // al momento de printear una persona nos muestra adentro la linea de telefono y nos evita volver a mostrar la persona
-    // y evitar un bucle infinito.
-    @JoinColumn(name = "fk_id_user", referencedColumnName = "id_user")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_user")
     private User user;
 
 
-    @ManyToOne(targetEntity = City.class, fetch = FetchType.EAGER)
-    @JoinColumn(name = "fk_id_city", referencedColumnName = "id_city")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_city")
     private City city;
 
     //ENUMS
     public enum Status {
-        ACTIVE, DISABLED;
+        active, disabled;
     }
 
     @Enumerated(EnumType.STRING)
@@ -47,7 +43,7 @@ public class PhoneLine {
     private Status phone_line_status;
 
     public enum Type {
-        MOBILE, RESIDENCIAL;
+        mobile, residential;
     }
 
     @Enumerated(EnumType.STRING)
@@ -55,9 +51,7 @@ public class PhoneLine {
     @Column(name = "type")
     private Type phone_line_type;
 
-    // lista de facturas
-    @OneToMany(mappedBy = "phone_line")
+    @OneToMany(mappedBy = "phoneline")
     private List<Invoice> invoices;
-
 
 }

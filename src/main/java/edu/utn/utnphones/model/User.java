@@ -42,18 +42,13 @@ public class User {
     private String password;
 
 
-// Fetch: Esta propiedad se utiliza para determinar cómo debe ser cargada la entidad
-    //EAGER (ansioso): Indica que la relación debe de ser cargada al momento de cargar la entidad.
-    //LAZY (perezoso): Indica que la relación solo se cargará cuando la propiedad sea leída por primera vez.
-    @ManyToOne(targetEntity = City.class, fetch = FetchType.EAGER)
-    @JoinColumn(name = "fk_id_city", referencedColumnName = "id_city")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_city")
     private City city;
-
-
 
     //ENUM
     public enum Type {
-        CLIENT, EMPLOYEE;
+        client, employee;
     }
 
     @Enumerated(EnumType.STRING)

@@ -1,7 +1,6 @@
 package edu.utn.utnphones.service;
 
-import edu.utn.utnphones.exceptions.CityNotExistsException;
-
+import edu.utn.utnphones.projections.MostCalledProjection;
 import edu.utn.utnphones.exceptions.UserNotExistsException;
 import edu.utn.utnphones.model.User;
 import edu.utn.utnphones.repository.UserRepository;
@@ -35,5 +34,9 @@ public class UserService {
 
     public User findById(Integer id) throws UserNotExistsException {
         return userRepository.findById(id).orElseThrow(UserNotExistsException::new);
+    }
+
+    public MostCalledProjection getMostCalledFromUser(Integer userId) {
+        return userRepository.getMostCalledFromUser(userId);
     }
 }
