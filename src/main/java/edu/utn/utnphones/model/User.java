@@ -46,6 +46,7 @@ public class User {
     @JoinColumn(name = "id_city")
     private City city;
 
+
     //ENUM
     public enum Type {
         client, employee;

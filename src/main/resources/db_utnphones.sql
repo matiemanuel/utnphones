@@ -4,6 +4,7 @@
 -- Model: New Model    Version: 1.0
 -- MySQL Workbench Forward Engineering
 SET GLOBAL TIME_ZONE= '-3:00'; -- zona horaria BsAs/Arg
+SET GLOBAL event_scheduler = ON; -- Necesario para crear eventos automaticos.
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
@@ -160,12 +161,3 @@ INSERT INTO `calls` (duration, id_invoice, origin_number, destiny_number, tariff
 (30,2,'3582545456','2234545456',0.3,"2020-01-04 10:10:10"),
 (30,1,'2234545456','2234475475',0.15,"2020-01-05 10:10:10");
 
-select * from provinces;
-select * from cities;
-
-select * from cities c
-join provinces p
-	on c.id_province = p.id_province;
-select * from users;
-
-select * from calls;
