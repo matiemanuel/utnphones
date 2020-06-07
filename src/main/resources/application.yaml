@@ -4,6 +4,7 @@ spring:
     url: jdbc:mysql://localhost:3306/utnphones
     username: root
     password:
+    show-sql: true
   jpa:
     hibernate.ddl-auto: update
     generate-ddl: true

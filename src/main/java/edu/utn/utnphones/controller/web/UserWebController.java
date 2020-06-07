@@ -23,6 +23,7 @@ public class UserWebController {
         this.sessionManager = sessionManager;
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public ResponseEntity<List<User>> getUsers(@RequestHeader("Authorization") String sessionToken) {
         User currentUser = sessionManager.getCurrentUser(sessionToken);

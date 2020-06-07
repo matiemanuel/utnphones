@@ -22,8 +22,8 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User login(String username, String password) throws UserNotExistsException {
-        User user = userRepository.getByNameAndPassword(username, password);
+    public User login(String email, String password) throws UserNotExistsException {
+        User user = userRepository.getByEmailAndPassword(email, password);
         return Optional.ofNullable(user).orElseThrow(() -> new UserNotExistsException());
     }
 

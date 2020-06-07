@@ -16,7 +16,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "Select * from users where name = ?1", nativeQuery = true)
     public List<User> findbyName(String name);
 
-    User getByNameAndPassword(String username, String password);
+    User getByEmailAndPassword(String email, String password);
 
     public Optional<User> findById(Integer id);
 
