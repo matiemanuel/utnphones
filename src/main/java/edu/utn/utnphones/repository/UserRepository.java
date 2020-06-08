@@ -16,7 +16,13 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "Select * from users where name = ?1", nativeQuery = true)
     public List<User> findbyName(String name);
 
+    User getByEmailAndPassword(String email, String password);
+
     public Optional<User> findById(Integer id);
+
+//    public Integer update(User value);
+
+//    public void remove(Integer id);
 
     @Query(value = "SELECT s.name, s.lastname, (Select destiny_number from calls c\n" +
             "join phone_lines pl\n" +
