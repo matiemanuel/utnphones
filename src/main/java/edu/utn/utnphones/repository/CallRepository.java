@@ -15,4 +15,7 @@ public interface CallRepository extends JpaRepository<Call, Integer> {
     public List<Call> findbyOriginNumber(String number);
 
     public Optional<Call> findById(Integer id);
+
+    @Query(value = "call sp_add_call(?1, ?2, ?3)", nativeQuery = true)
+    Call addCallFromBackOffice(String origin_number, String destiny_number, Integer duration);
 }

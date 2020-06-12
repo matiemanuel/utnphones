@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/")
 public class UserWebController {
     private final UserController userController;
     private final SessionManager sessionManager;
@@ -34,7 +34,7 @@ public class UserWebController {
         return (users.size() > 0) ? ResponseEntity.ok(users) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PostMapping("/add")
+    @PostMapping("/users")
     public ResponseEntity newUser(@RequestHeader("Authorization") String sessionToken, @RequestBody User user ) throws UserNotExistsException {
         User currentUser = sessionManager.getCurrentUser(sessionToken);
         return ResponseEntity.status(HttpStatus.CREATED).body(userController.addUser(user));

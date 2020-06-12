@@ -15,7 +15,12 @@ public class SessionManager {
     int sesionExpiration = 60;
 
     public String createSession(User user) {
-        String token = UUID.randomUUID().toString();
+        String token = null;
+        if ("client".equals(user.getUser_type())) {
+            token = UUID.randomUUID().toString();
+        }else{
+            token = "backoffice";
+        }
         sessionMap.put(token, new Session(token, user, new Date(System.currentTimeMillis())));
         return token;
     }
