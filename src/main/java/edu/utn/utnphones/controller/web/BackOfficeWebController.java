@@ -2,7 +2,9 @@ package edu.utn.utnphones.controller.web;
 
 
 
+import edu.utn.utnphones.controller.UserController;
 import edu.utn.utnphones.dto.CallRequestDto;
+import edu.utn.utnphones.exceptions.CallNotExistsException;
 import edu.utn.utnphones.model.User;
 import edu.utn.utnphones.service.CallService;
 import edu.utn.utnphones.service.UserService;
@@ -22,27 +24,33 @@ public class BackOfficeWebController {
     private final CallService callService;
     private final UserService userService;
 
+
     @Autowired
-    public BackOfficeWebController(UserService userService,CallService callService, SessionManager sessionManager) {
+    public BackOfficeWebController(UserService userService,CallService callService, SessionManager sessionManager, UserController userController) {
         this.userService= userService;
         this.sessionManager = sessionManager;
         this.callService= callService;
     }
 
-    //No funciona - tira exception sql REVISAR
-    @PostMapping("/addCall")
-    public ResponseEntity newCall(@RequestHeader("Authorization") String sessionToken,@RequestBody CallRequestDto callDto) {
+
+    @PostMapping("addCall")
+    public ResponseEntity newCall(@RequestHeader("Authorization") String sessionToken,@RequestBody CallRequestDto callDto) throws CallNotExistsException {
         User currentUser = sessionManager.getCurrentUser(sessionToken);
         return ResponseEntity.status(HttpStatus.CREATED).body(callService.addCallFromBackOffice(callDto.getOrigin(),
                 callDto.getDestiny(), callDto.getDuration()));
 
     }
 
-
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("users")
-    public List<User> getAll(@RequestParam(required = false) String name) {
-        return userService.getAll(name);
+    @GetMapping
+    public ResponseEntity<List<User>> getUsers(@RequestHeader("Authorization") String sessionToken) {
+        User currentUser = sessionManager.getCurrentUser(sessionToken);
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        List<User> users = userService.getAll(currentUser.getName());
+        return (users.size() > 0) ? ResponseEntity.ok(users) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
 
 }

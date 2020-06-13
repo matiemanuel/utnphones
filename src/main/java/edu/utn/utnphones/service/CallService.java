@@ -25,8 +25,9 @@ public class CallService {
         return callRepository.save(newCall);
     }
 
-    public Call addCallFromBackOffice(String origin_number, String destiny_number, Integer duration) {
-        return callRepository.addCallFromBackOffice(origin_number, destiny_number, duration);
+    public Call addCallFromBackOffice(String origin_number, String destiny_number, Integer duration) throws CallNotExistsException {
+         Integer id = callRepository.addCall(origin_number, destiny_number, duration);
+         return this.findById(id);
     }
 
     public List<Call> getAll(String origin_number) {

@@ -16,10 +16,13 @@ public class SessionManager {
 
     public String createSession(User user) {
         String token = null;
-        if ("client".equals(user.getUser_type())) {
+
+        if ("client".equals(String.valueOf(user.getUser_type()))) {
             token = UUID.randomUUID().toString();
+            System.out.println("Logueado como cliente ");
         }else{
             token = "backoffice";
+            System.out.println("Logueado como empleado");
         }
         sessionMap.put(token, new Session(token, user, new Date(System.currentTimeMillis())));
         return token;

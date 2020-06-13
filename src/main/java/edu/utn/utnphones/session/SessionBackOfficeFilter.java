@@ -17,13 +17,16 @@ public class SessionBackOfficeFilter extends OncePerRequestFilter {
     @Autowired
     private SessionManager sessionManager;
 
+    private String backOfficeToken = "backoffice";
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response, FilterChain filterChain)
                                     throws ServletException, IOException{
 
         String sessionToken = request.getHeader("Authorization");
-        if ("backoffice".equals(sessionToken)) {
+        Session session = sessionManager.getSession(sessionToken);
+        if (backOfficeToken.equals(sessionToken) & (null != session )) {
             filterChain.doFilter(request, response);
         } else {
             response.setStatus(HttpStatus.FORBIDDEN.value());
