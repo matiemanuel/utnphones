@@ -6,6 +6,7 @@ import edu.utn.utnphones.repository.InvoiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -27,5 +28,13 @@ public class InvoiceService {
 
     public Invoice findById(Integer id) throws InvoiceNotExistsException {
         return invoiceRepository.findById(id).orElseThrow(InvoiceNotExistsException::new);
+    }
+
+    public List<Invoice> getInvoicesByUser(Integer idUser) {
+        return invoiceRepository.findByUserId(idUser);
+    }
+
+    public List<Invoice> getInvoicesByDates(Integer idUser, Date from, Date to) {
+        return invoiceRepository.getInvoicesByDates(idUser, from, to);
     }
 }

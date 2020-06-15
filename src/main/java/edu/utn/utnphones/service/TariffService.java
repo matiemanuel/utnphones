@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Objects.isNull;
+
 @Service
 public class TariffService {
 
@@ -30,4 +32,6 @@ public class TariffService {
     public Tariff findById(Integer id) throws TariffNotExistsException {
         return tariffRepository.findById(id).orElseThrow(TariffNotExistsException::new);
     }
+
+
 }

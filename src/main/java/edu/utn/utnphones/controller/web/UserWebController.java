@@ -2,42 +2,68 @@ package edu.utn.utnphones.controller.web;
 
 import edu.utn.utnphones.controller.UserController;
 import edu.utn.utnphones.exceptions.UserNotExistsException;
+import edu.utn.utnphones.model.Call;
+import edu.utn.utnphones.model.Invoice;
 import edu.utn.utnphones.model.User;
+import edu.utn.utnphones.projections.MostCalledProjection;
+import edu.utn.utnphones.service.CallService;
+import edu.utn.utnphones.service.InvoiceService;
+import edu.utn.utnphones.service.UserService;
 import edu.utn.utnphones.session.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/")
 public class UserWebController {
-    private final UserController userController;
+    private final CallService callService;
+    private final InvoiceService invoiceService;
+    private final UserService userService;
     private final SessionManager sessionManager;
 
+
     @Autowired
-    public UserWebController(UserController userController, SessionManager sessionManager) {
-        this.userController = userController;
+    public UserWebController(CallService callService,InvoiceService invoiceService,UserService userService, SessionManager sessionManager) {
+        this.callService = callService;
+        this.invoiceService = invoiceService;
+        this.userService = userService;
         this.sessionManager = sessionManager;
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping
-    public ResponseEntity<List<User>> getUsers(@RequestHeader("Authorization") String sessionToken) {
+    @GetMapping("/{userId}/mostCalled")
+    public MostCalledProjection getMostCalledFromUser (@PathVariable Integer userId){ return userService.getMostCalledFromUser(userId);}
+
+    @GetMapping("/getCallsByDates/")
+    public ResponseEntity<List<Call>> getCallsByDates(@RequestHeader("Authorization") String sessionToken, @RequestParam String from,
+                                                      @RequestParam String to) throws ParseException {
+        List<Call> calls = new ArrayList<>();
         User currentUser = sessionManager.getCurrentUser(sessionToken);
-        if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        if ((from != null) && (to != null)){
+            Date fromDate = new SimpleDateFormat("dd/MM/yyyy").parse(from);
+            Date toDate = new SimpleDateFormat("dd/MM/yyyy").parse(to);
+            calls = callService.getCallsByDates(currentUser.getId(), fromDate, toDate);
         }
-        List<User> users = userController.getAll(currentUser.getName());
-        return (users.size() > 0) ? ResponseEntity.ok(users) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return (calls.size() > 0) ?  ResponseEntity.ok(calls) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PostMapping("/users")
-    public ResponseEntity newUser(@RequestHeader("Authorization") String sessionToken, @RequestBody User user ) throws UserNotExistsException {
+    @GetMapping("/getInvoicesByDates/")
+    public ResponseEntity<List<Invoice>> getInvoicesByDates(@RequestHeader("Authorization") String sessionToken, @RequestParam String from,
+                                                            @RequestParam String to) throws ParseException {
+        List<Invoice> invoices = new ArrayList<>();
         User currentUser = sessionManager.getCurrentUser(sessionToken);
-        return ResponseEntity.status(HttpStatus.CREATED).body(userController.addUser(user));
-
+        if ((from != null) && (to != null)){
+            Date fromDate = new SimpleDateFormat("dd/MM/yyyy").parse(from);
+            Date toDate = new SimpleDateFormat("dd/MM/yyyy").parse(to);
+            invoices = invoiceService.getInvoicesByDates(currentUser.getId(), fromDate, toDate);
+        }
+        return (invoices.size() > 0) ?  ResponseEntity.ok(invoices) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

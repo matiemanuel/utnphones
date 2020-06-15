@@ -6,8 +6,8 @@ import edu.utn.utnphones.repository.CallRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.Objects.isNull;
 
@@ -21,11 +21,8 @@ public class CallService {
         this.callRepository = callRepository;
     }
 
-    public Call addCall(Call newCall) {
-        return callRepository.save(newCall);
-    }
 
-    public Call addCallFromBackOffice(String origin_number, String destiny_number, Integer duration) throws CallNotExistsException {
+    public Call addCall(String origin_number, String destiny_number, Integer duration) throws CallNotExistsException {
          Integer id = callRepository.addCall(origin_number, destiny_number, duration);
          return this.findById(id);
     }
@@ -40,4 +37,14 @@ public class CallService {
     public Call findById(Integer id) throws CallNotExistsException {
         return callRepository.findById(id).orElseThrow(CallNotExistsException::new);
     }
+
+    public List<Call> getCallsByDates(Integer idUser, Date from, Date to) {
+        return callRepository.getCallsByDates(idUser, from, to);
+    }
+
+    public List<Call> getCallsByUser(Integer idUser) {
+        return callRepository.getCallsByUser(idUser);
+    }
+
+
 }

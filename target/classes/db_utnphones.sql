@@ -194,15 +194,19 @@ DECLARE tariff_cost float;
 DECLARE total_price float;
 DECLARE date_call datetime;
 
+
 set origin_city_id= fn_id_city_from_prefix(p_origin_phone);
 set destiny_city_id= fn_id_city_from_prefix(p_destiny_phone);
+
 select price into tariff_price from tariffs where id_origin_city= origin_city_id and id_destiny_city= destiny_city_id;
 select cost into tariff_cost from tariffs where id_origin_city= origin_city_id and id_destiny_city= destiny_city_id;
+
 set total_price =  (p_duration * (tariff_price/60));
+
 set date_call = (select now());
 
 insert into calls (duration, id_invoice, origin_number, destiny_number, tariff_price, tariff_cost, total_price, call_date)
 values(p_duration, null, p_origin_phone, p_destiny_phone, tariff_price, tariff_cost, total_price, date_call);
-
+select LAST_INSERT_ID() as 'id_call';
 END //
 

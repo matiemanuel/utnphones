@@ -34,4 +34,6 @@ public class CityService {
     public City findById(Integer id) throws CityNotExistsException {
         return cityRepository.findById(id).orElseThrow(CityNotExistsException::new);
     }
+
+
 }

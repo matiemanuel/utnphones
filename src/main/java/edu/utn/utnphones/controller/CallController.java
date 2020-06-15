@@ -24,10 +24,6 @@ public class CallController {
         return this.callService.findById(callId);
     }
 
-    @PostMapping("/")
-    public void addCall(@RequestBody Call newCall) {// transforma el json en una entidad
-        callService.addCall(newCall);
-    }
 
     @GetMapping("/")
     public List<Call> getAll(@RequestParam(required = false) String origin_number) {

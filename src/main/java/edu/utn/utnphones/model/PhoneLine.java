@@ -34,7 +34,7 @@ public class PhoneLine {
 
     //ENUMS
     public enum Status {
-        active, disabled;
+        active, disabled, suspended;
     }
 
     @Enumerated(EnumType.STRING)
