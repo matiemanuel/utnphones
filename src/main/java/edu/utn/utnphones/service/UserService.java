@@ -43,7 +43,7 @@ public class UserService {
     }
 
 //    public User updateUser(User user) throws UserNotExistsException {
-//        if (userRepository.update(user) > 0) {
+//        if (userRepository.save(user) != null) {
 //            return user;
 //        } else {
 //            throw new UserNotExistsException();
