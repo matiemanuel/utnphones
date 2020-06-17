@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Objects.isNull;
 
@@ -20,8 +21,13 @@ public class CallService {
         this.callRepository = callRepository;
     }
 
-    public void addCall(Call newCall) {
-        callRepository.save(newCall);
+    public Call addCall(Call newCall) {
+        return callRepository.save(newCall);
+    }
+
+    public Call addCallFromBackOffice(String origin_number, String destiny_number, Integer duration) throws CallNotExistsException {
+         Integer id = callRepository.addCall(origin_number, destiny_number, duration);
+         return this.findById(id);
     }
 
     public List<Call> getAll(String origin_number) {

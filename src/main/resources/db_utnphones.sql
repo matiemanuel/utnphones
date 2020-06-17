@@ -87,6 +87,7 @@ ENGINE = InnoDB;
 
 INSERT INTO `users` (name, lastname, dni, email, password, id_city, type) VALUES ('Juan', 'Perez', '12345678', 'juan@gmail.com','psw',1,'client'),
 ('Martin', 'Lopez','12345678', 'martin@gmail.com','psw',2,'client'),
+('admin', 'admin','12345678', 'admin@gmail.com','admin',2,'employee'),
 ('Osvaldo', 'Larreta', '11990555', 'osvaldo@gmail.com','123',1,'client');
 -- -----------------------------------------------------
 -- Table `phone_lines`
@@ -139,25 +140,73 @@ insert into invoices (number_of_calls,price_cost,total_price,invoice_date,expira
 -- Table `calls`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `calls` (
-  `id_call` INT NOT NULL AUTO_INCREMENT,
-  `duration` INT NULL,
-  `id_invoice` INT NULL,
-  `origin_number` VARCHAR(15) NULL,
-  `destiny_number` VARCHAR(15) NULL,
-  `tariff_price` DOUBLE NULL,
-  `call_date` DATETIME NULL,
-  PRIMARY KEY (`id_call`),
-  CONSTRAINT `fk_id_bill`
-    FOREIGN KEY (`id_invoice`)
-    REFERENCES `invoices` (`id_invoice`)
-    ON DELETE SET NULL
-    ON UPDATE NO ACTION)
+`id_call` INT NOT NULL AUTO_INCREMENT,
+`duration` INT NULL,
+`id_invoice` INT NULL,
+`origin_number` VARCHAR(15) NULL,
+`destiny_number` VARCHAR(15) NULL,
+`tariff_price` DOUBLE NULL,
+`tariff_cost` DOUBLE NULL,
+`total_price` DOUBLE NULL,
+`call_date` DATETIME NULL,
+PRIMARY KEY (`id_call`),
+CONSTRAINT `fk_id_invoice`
+FOREIGN KEY (`id_invoice`)
+REFERENCES `invoices` (`id_invoice`)
+  ON DELETE SET NULL
+  ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
-INSERT INTO `calls` (duration, id_invoice, origin_number, destiny_number, tariff_price, call_date) VALUES
-(60,1,'2234545456','3582545456',0.3,"2020-01-01 10:10:10"),
-(120,1,'2234545456','3582545456',0.3,"2020-01-02 10:10:10"),
-(160,1,'2234545456','3582545456',0.3,"2020-01-03 10:10:10"),
-(30,2,'3582545456','2234545456',0.3,"2020-01-04 10:10:10"),
-(30,1,'2234545456','2234475475',0.15,"2020-01-05 10:10:10");
+INSERT INTO `calls` (duration, id_invoice, origin_number, destiny_number, tariff_price, tariff_cost, total_price, call_date) VALUES
+(60,null,'2234545456','3582545456',0.3,0.1,10,"2020-01-01 10:10:10"),
+(120,null,'2234545456','3582545456',0.3,0.1,10,"2020-01-02 10:10:10"),
+(160,null,'2234545456','3582545456',0.3,0.1,10,"2020-01-03 10:10:10"),
+(30,null,'3582545456','2234545456',0.3,0.1,10,"2020-01-04 10:10:10"),
+(30,null,'2234545456','2234475475',0.15,0.1,10,"2020-01-05 10:10:10");
+
+
+-- Funcion que permite obtener el prefijo de un numero de telefono
+-- primero debo revisar que coincida con la ciudad con mas digitos en su prefijo
+-- primero ciudad con prefijo de 4 digitos y desp de 3 digitos
+DELIMITER //
+CREATE FUNCTION fn_id_city_from_prefix(origin_number VARCHAR(15)) RETURNS INTEGER-- working
+BEGIN
+declare city_id int;
+select id_city into city_id from cities where origin_number
+like concat(prefix,'%') order by LENGTH(prefix) DESC LIMIT 1;
+return city_id;
+END//
+
+-- Se debe permitir también el agregado de llamadas, con un login especial,
+-- ya que este método de nuestra API será llamado nada más que por el área deinfraestructura
+-- cada vez que se produzca una llamada.  El área de infraestructurasólo enviará la siguiente
+-- información de llamadas: Número de origen, Número de destino, Duración de la llamada
+DELIMITER //
+CREATE PROCEDURE `sp_add_call`(p_origin_phone VARCHAR(20), p_destiny_phone VARCHAR(20), p_duration int)-- working
+BEGIN
+
+DECLARE origin_city_id int;
+DECLARE destiny_city_id int;
+DECLARE origin_prefix int;
+DECLARE destiny_prefix int;
+DECLARE tariff_price float;
+DECLARE tariff_cost float;
+DECLARE total_price float;
+DECLARE date_call datetime;
+
+
+set origin_city_id= fn_id_city_from_prefix(p_origin_phone);
+set destiny_city_id= fn_id_city_from_prefix(p_destiny_phone);
+
+select price into tariff_price from tariffs where id_origin_city= origin_city_id and id_destiny_city= destiny_city_id;
+select cost into tariff_cost from tariffs where id_origin_city= origin_city_id and id_destiny_city= destiny_city_id;
+
+set total_price =  (p_duration * (tariff_price/60));
+
+set date_call = (select now());
+
+insert into calls (duration, id_invoice, origin_number, destiny_number, tariff_price, tariff_cost, total_price, call_date)
+values(p_duration, null, p_origin_phone, p_destiny_phone, tariff_price, tariff_cost, total_price, date_call);
+select LAST_INSERT_ID() as 'id_call';
+END //
 

@@ -34,6 +34,12 @@ public class Call {
     @Column(name = "tariff_price")
     private Double tariff_price;
 
+    @Column(name = "tariff_cost")
+    private Double tariff_cost;
+
+    @Column(name = "total_price")
+    private Double total_price;
+
     @Column(name = "call_date")
     private String date;
 
