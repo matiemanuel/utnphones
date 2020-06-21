@@ -1,7 +1,5 @@
 package edu.utn.utnphones.controller.web;
 
-import edu.utn.utnphones.controller.UserController;
-import edu.utn.utnphones.exceptions.UserNotExistsException;
 import edu.utn.utnphones.model.Call;
 import edu.utn.utnphones.model.Invoice;
 import edu.utn.utnphones.model.User;
@@ -38,8 +36,10 @@ public class UserWebController {
         this.sessionManager = sessionManager;
     }
 
-    @GetMapping("/{userId}/mostCalled")
-    public MostCalledProjection getMostCalledFromUser (@PathVariable Integer userId){ return userService.getMostCalledFromUser(userId);}
+    @GetMapping("/mostCalled")
+    public MostCalledProjection getMostCalledFromUser (@RequestHeader("Authorization") String authorization){
+        return userService.getMostCalledFromUser(sessionManager.getCurrentUser(authorization).getId());
+    }
 
     @GetMapping("/getCallsByDates/")
     public ResponseEntity<List<Call>> getCallsByDates(@RequestHeader("Authorization") String sessionToken, @RequestParam String from,

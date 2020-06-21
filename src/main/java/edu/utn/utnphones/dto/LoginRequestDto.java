@@ -1,22 +1,13 @@
 package edu.utn.utnphones.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
 public class LoginRequestDto {
-    String email;
-    String password;
 
-    public String getEmail() {
-        return email;
-    }
+    private String email;
+    private String password;
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }

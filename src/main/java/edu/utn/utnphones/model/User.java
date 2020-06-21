@@ -41,30 +41,26 @@ public class User {
     @Column(name = "password")
     private String password;
 
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_city")
     private City city;
-
-
-    //ENUM
-    public enum Type {
-        client, employee;
-    }
 
     @Enumerated(EnumType.STRING)
     @NotNull
     @Column(name = "type")
     private Type user_type;
 
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    @Column(name = "status")
+    private Status user_status;
 
-    // lista de lineas de telefono
-    @OneToMany(mappedBy = "user")
-    private List<PhoneLine> phone_lines;
+    public enum Type {
+        client, employee;
+    }
 
-
-
-
-
+    public enum Status {
+        active, disabled;
+    }
 
 }

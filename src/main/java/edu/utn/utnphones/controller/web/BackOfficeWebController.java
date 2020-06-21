@@ -1,14 +1,9 @@
 package edu.utn.utnphones.controller.web;
 
-import edu.utn.utnphones.dto.CallRequestDto;
-import edu.utn.utnphones.exceptions.CallNotExistsException;
+import edu.utn.utnphones.dto.PhoneLineActionRequest;
 import edu.utn.utnphones.exceptions.PhoneLineNotExistsException;
-import edu.utn.utnphones.exceptions.TariffNotExistsException;
 import edu.utn.utnphones.exceptions.UserNotExistsException;
-import edu.utn.utnphones.model.Call;
-import edu.utn.utnphones.model.Invoice;
-import edu.utn.utnphones.model.Tariff;
-import edu.utn.utnphones.model.User;
+import edu.utn.utnphones.model.*;
 import edu.utn.utnphones.service.*;
 import edu.utn.utnphones.session.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +12,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import static edu.utn.utnphones.model.User.Status.active;
+import static edu.utn.utnphones.model.User.Status.disabled;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
+
 @RestController
-@RequestMapping("/backoffice/")
+@RequestMapping("/backoffice")
 public class BackOfficeWebController {
 
     private final SessionManager sessionManager;
@@ -48,101 +45,58 @@ public class BackOfficeWebController {
         this.invoiceService = invoiceService;
     }
 
+    //USERS
 
-    // USERS
-    @ResponseStatus(HttpStatus.OK)
-    @PostMapping("addUser")
+    @ResponseStatus(OK)
+    @PostMapping("/user")
     public ResponseEntity newUser(@RequestHeader("Authorization") String sessionToken, @RequestBody User user ){
-        User currentUser = sessionManager.getCurrentUser(sessionToken);
-        if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.addUser(user));
+        return ResponseEntity.status(CREATED).body(userService.addUser(user));
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("users")
+    @ResponseStatus(OK)
+    @GetMapping("/user")
+    public ResponseEntity getById(@RequestHeader("Authorization") String sessionToken, @RequestParam("userId") Integer userId ) throws UserNotExistsException {
+        return ResponseEntity.status(OK).body(userService.findById(userId));
+    }
+
+    @ResponseStatus(OK)
+    @DeleteMapping("/user")
+    public ResponseEntity disableUser(@RequestHeader("Authorization") String sessionToken, @RequestParam("userId") Integer userId ) throws UserNotExistsException {
+        return ResponseEntity.status(OK).body(userService.disableUser(userId));
+    }
+
+    @ResponseStatus(OK)
+    @GetMapping("/users")
     public ResponseEntity<List<User>> getUsers(@RequestHeader("Authorization") String sessionToken) {
-        User currentUser = sessionManager.getCurrentUser(sessionToken);
-        if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-        List<User> users = userService.getAll(currentUser.getName());
+        List<User> temp = userService.getAll();
+        List<User> users = new ArrayList<>();
+        for(User user : temp)
+            if(user.getUser_status().equals(active))
+                users.add(user);
         return (users.size() > 0) ? ResponseEntity.ok(users) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    //CALLS
-    @PostMapping("addCall")
-    public ResponseEntity newCall(@RequestHeader("Authorization") String sessionToken,@RequestBody CallRequestDto callDto) throws CallNotExistsException {
-        User currentUser = sessionManager.getCurrentUser(sessionToken);
-        return ResponseEntity.status(HttpStatus.CREATED).body(callService.addCall(callDto.getOrigin(),
-                callDto.getDestiny(), callDto.getDuration()));
-    }
-
-    @GetMapping("{userId}/calls")
-    public ResponseEntity<List<Call>> getCallsByUser(@RequestHeader("Authorization") String sessionToken, @PathVariable Integer idUser){
-        List<Call> calls = new ArrayList<>();
-        calls = callService.getCallsByUser(idUser);
-        return (calls.size() > 0) ?  ResponseEntity.ok(calls) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
-
-    //TARIFFS
-    @GetMapping("tariffs/{tariffId}")
-    public Tariff getTariffbyId(@PathVariable Integer tariffId) throws TariffNotExistsException {
-        return this.tariffService.findById(tariffId);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("tariffs")
-    public ResponseEntity<List<Tariff>> getTariffs(@RequestHeader("Authorization") String sessionToken) {
-        User currentUser = sessionManager.getCurrentUser(sessionToken);
-        if (currentUser == null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-        List<Tariff> tariffs = tariffService.getAll();
-        return (tariffs.size() > 0) ? ResponseEntity.ok(tariffs) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
-
     //PHONELINES
-    @GetMapping("activePhoneLine/{phonelineId}/")
-    public void activePhoneLine(@RequestHeader("Authorization") String sessionToken, @PathVariable Integer phonelineId) throws PhoneLineNotExistsException {
-        phoneLineService.updateStatus("active", phonelineId);
+    @ResponseStatus(OK)
+    @PostMapping("/phoneline")
+    public ResponseEntity addPhoneline(@RequestHeader("Authorization") String sessionToken, @RequestBody PhoneLine phoneline) {
+        return ResponseEntity.status(CREATED).body(phoneLineService.addPhoneLine(phoneline));
     }
 
-    @GetMapping("/disabledPhoneLine/{phonelineId}")
-    public void disabledPhoneLine(@RequestHeader("Authorization") String sessionToken, @PathVariable Integer phonelineId) throws PhoneLineNotExistsException {
-        phoneLineService.updateStatus("disabled", phonelineId);
-    }
-    @GetMapping("suspendedPhoneLine/{phonelineId}/")
-    public void suspendedPhoneLine(@RequestHeader("Authorization") String sessionToken, @PathVariable Integer phonelineId) throws PhoneLineNotExistsException {
-        phoneLineService.updateStatus("suspended", phonelineId);
+    @PutMapping("/phoneline")
+    public ResponseEntity phoneLineAction(@RequestHeader("Authorization") String sessionToken, @RequestBody PhoneLineActionRequest action) throws PhoneLineNotExistsException {
+        phoneLineService.updateStatus(action.getStatus().toString(), action.getPhoneLineId());
+        return ResponseEntity.ok().build();
     }
 
-    //INVOICES
-    @GetMapping("/invoices/{userId}/dates/")
-    public ResponseEntity<List<Invoice>> getInvoicesByDatesAndByUser(@RequestHeader("Authorization") String sessionToken, @RequestParam String from,
-                                                            @RequestParam String to, @PathVariable Integer userId) throws ParseException, UserNotExistsException {
-        List<Invoice> invoices = new ArrayList<>();
-        User user= userService.findById(userId);
-        if ((from != null) && (to != null) && (user!=null)){
-            Date fromDate = new SimpleDateFormat("dd/MM/yyyy").parse(from);
-            Date toDate = new SimpleDateFormat("dd/MM/yyyy").parse(to);
-            invoices = invoiceService.getInvoicesByDates(userId, fromDate, toDate);
-        }
-        return (invoices.size() > 0) ?  ResponseEntity.ok(invoices) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    @DeleteMapping("/phoneline")
+    public ResponseEntity phoneLineAction(@RequestHeader("Authorization") String sessionToken, @RequestParam("idPhoneLine") Integer idPhoneLine) throws PhoneLineNotExistsException {
+        phoneLineService.updateStatus(PhoneLine.Status.disabled.toString(), idPhoneLine);
+        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/invoices/{userId}")
-    public ResponseEntity<List<Invoice>> getInvoicesByUser(@RequestHeader("Authorization") String sessionToken, @PathVariable Integer userId) throws UserNotExistsException {
-        List<Invoice> invoices = new ArrayList<>();
-        User user= userService.findById(userId);
-        if (user != null){
-            invoices = invoiceService.getInvoicesByUser(userId);
-        }
-        return (invoices.size() > 0) ?  ResponseEntity.ok(invoices) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
+
+
 
 
 }

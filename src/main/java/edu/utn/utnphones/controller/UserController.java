@@ -43,8 +43,8 @@ public class UserController {
     }
 
     @GetMapping("/")
-    public List<User> getAll(@RequestParam(required = false) String name) {
-        return userService.getAll(name);
+    public List<User> getAll() {
+        return userService.getAll();
     }
 
     @GetMapping("/{userId}/mostCalled")

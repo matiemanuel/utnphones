@@ -20,8 +20,9 @@ public class PhoneLineService {
         this.phonelineRepository = phonelineRepository;
     }
 
-    public void addPhoneLine(PhoneLine newPhoneLine) {
+    public PhoneLine addPhoneLine(PhoneLine newPhoneLine) {
         phonelineRepository.save(newPhoneLine);
+        return newPhoneLine;
     }
 
     public List<PhoneLine> getAll(String lineNumber) {
