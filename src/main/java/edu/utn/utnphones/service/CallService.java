@@ -2,6 +2,7 @@ package edu.utn.utnphones.service;
 
 import edu.utn.utnphones.exceptions.CallNotExistsException;
 import edu.utn.utnphones.model.Call;
+import edu.utn.utnphones.projections.CallsByDates;
 import edu.utn.utnphones.repository.CallRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,8 +24,8 @@ public class CallService {
 
 
     public Call addCall(String origin_number, String destiny_number, Integer duration) throws CallNotExistsException {
-         Integer id = callRepository.addCall(origin_number, destiny_number, duration);
-         return this.findById(id);
+        Integer id = callRepository.addCall(origin_number, destiny_number, duration);
+        return this.findById(id);
     }
 
     public List<Call> getAll(String origin_number) {
@@ -38,7 +39,7 @@ public class CallService {
         return callRepository.findById(id).orElseThrow(CallNotExistsException::new);
     }
 
-    public List<Call> getCallsByDates(Integer idUser, Date from, Date to) {
+    public List<CallsByDates> getCallsByDates(Integer idUser, Date from, Date to) {
         return callRepository.getCallsByDates(idUser, from, to);
     }
 

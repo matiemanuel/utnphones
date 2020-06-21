@@ -46,7 +46,4 @@ public class UserController {
     public List<User> getAll() {
         return userService.getAll();
     }
-
-    @GetMapping("/{userId}/mostCalled")
-    public MostCalledProjection getMostCalledFromUser (@PathVariable Integer userId){ return userService.getMostCalledFromUser(userId);}
 }

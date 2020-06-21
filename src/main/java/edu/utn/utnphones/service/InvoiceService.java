@@ -2,6 +2,7 @@ package edu.utn.utnphones.service;
 
 import edu.utn.utnphones.exceptions.InvoiceNotExistsException;
 import edu.utn.utnphones.model.Invoice;
+import edu.utn.utnphones.projections.InvoiceByDates;
 import edu.utn.utnphones.repository.InvoiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class InvoiceService {
     }
 
     public List<Invoice> getAll() {
-            return invoiceRepository.findAll();
+        return invoiceRepository.findAll();
     }
 
     public Invoice findById(Integer id) throws InvoiceNotExistsException {
@@ -34,7 +35,7 @@ public class InvoiceService {
         return invoiceRepository.findByUserId(idUser);
     }
 
-    public List<Invoice> getInvoicesByDates(Integer idUser, Date from, Date to) {
+    public List<InvoiceByDates> getInvoicesByDates(Integer idUser, Date from, Date to) {
         return invoiceRepository.getInvoicesByDates(idUser, from, to);
     }
 }

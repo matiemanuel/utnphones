@@ -45,16 +45,4 @@ class UtnphonesApplicationTests {
         assertNotEquals(0, all.getBody().size());
     }
 
-    @Test
-    public void mostCalledTest() {
-
-        MostCalledProjection mostCalledFromUser = user.getMostCalledFromUser(1);
-
-        assertEquals("Juan", mostCalledFromUser.getName());
-        assertEquals("Perez", mostCalledFromUser.getLastname());
-        assertEquals("3582545456", mostCalledFromUser.getMostCalled());
-
-
-    }
-
 }

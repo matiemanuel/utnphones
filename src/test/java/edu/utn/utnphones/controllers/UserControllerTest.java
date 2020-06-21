@@ -43,11 +43,7 @@ public class UserControllerTest {
 
         when(userService.getMostCalledFromUser(1)).thenReturn(projection);
 
-        MostCalledProjection mostCalledFromUser = controller.getMostCalledFromUser(1);
 
-        assertEquals("matias", mostCalledFromUser.getName());
-        assertEquals("cer", mostCalledFromUser.getLastname());
-        assertEquals("223", mostCalledFromUser.getMostCalled());
 
 
     }
