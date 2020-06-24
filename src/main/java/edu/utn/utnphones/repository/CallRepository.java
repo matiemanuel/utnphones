@@ -1,6 +1,7 @@
 package edu.utn.utnphones.repository;
 
 import edu.utn.utnphones.model.Call;
+import edu.utn.utnphones.projections.CallsByDates;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,13 +22,17 @@ public interface CallRepository extends JpaRepository<Call, Integer> {
     @Query(value = "call sp_add_call(?1, ?2, ?3)", nativeQuery = true)
     public Integer addCall(String origin_number, String destiny_number, Integer duration);
 
-    @Query(value = "select * from calls c " +
+    /*@Query(value = "select * from calls c " +
             "join phone_lines pl\n" +
             "\ton c.origin_number = pl.line_number\n" +
             "where pl.id_user= :id_user and " +
             "call_date between :from and :to", nativeQuery = true)
     List<Call> getCallsByDates(@Param("id_user") Integer idUser, @Param("from") Date from,
-                               @Param("to") Date to);
+                               @Param("to") Date to);*/
+
+    @Query(value = "call sp_callsByUserAndDates(?1, ?2, ?3)", nativeQuery = true)
+    List<CallsByDates> getCallsByDates(@Param("id_user") Integer idUser, @Param("from") Date from,
+                                       @Param("to") Date to);
 
 
     @Query(value = "select * from calls c " +

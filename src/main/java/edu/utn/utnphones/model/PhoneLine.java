@@ -20,38 +20,35 @@ public class PhoneLine {
     private Integer id;
 
     @Column(name = "line_number")
-    private String line_number;
-
+    private String lineNumber;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_user")
     private User user;
 
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_city")
     private City city;
 
-    //ENUMS
-    public enum Status {
-        active, disabled, suspended;
-    }
-
     @Enumerated(EnumType.STRING)
     @NotNull
     @Column(name = "status")
-    private Status phone_line_status;
+    private Status phoneLineStatus;
+
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    @Column(name = "type")
+    private Type phoneLineType;
+
+    @OneToMany(mappedBy = "phoneline")
+    private List<Invoice> invoices;
 
     public enum Type {
         mobile, residential;
     }
 
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    @Column(name = "type")
-    private Type phone_line_type;
-
-    @OneToMany(mappedBy = "phoneline")
-    private List<Invoice> invoices;
+    public enum Status {
+        active, disabled, suspended;
+    }
 
 }

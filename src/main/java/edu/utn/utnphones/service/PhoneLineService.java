@@ -20,8 +20,9 @@ public class PhoneLineService {
         this.phonelineRepository = phonelineRepository;
     }
 
-    public void addPhoneLine(PhoneLine newPhoneLine) {
+    public PhoneLine addPhoneLine(PhoneLine newPhoneLine) {
         phonelineRepository.save(newPhoneLine);
+        return newPhoneLine;
     }
 
     public List<PhoneLine> getAll(String lineNumber) {
@@ -35,8 +36,9 @@ public class PhoneLineService {
         return phonelineRepository.findById(id).orElseThrow(PhoneLineNotExistsException::new);
     }
 
-    public void updateStatus(String status, Integer idPhoneLine) throws PhoneLineNotExistsException {
+    public PhoneLine updateStatus(String status, Integer idPhoneLine) throws PhoneLineNotExistsException {
         PhoneLine pl= this.findById(idPhoneLine);
         phonelineRepository.updateStatus(status ,idPhoneLine);
+        return pl;
     }
 }

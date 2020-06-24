@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import static edu.utn.utnphones.model.User.Status.disabled;
 import static java.util.Objects.isNull;
 
 @Service
@@ -31,30 +32,27 @@ public class UserService {
         return (userRepository.save(newUser));
     }
 
-    public List<User> getAll(String name) {
-        if (isNull(name)) {
-            return userRepository.findAll();
-        }
-        return userRepository.findbyName(name);
+    public List<User> getAll() {
+        return userRepository.findAll();
     }
 
     public User findById(Integer id) throws UserNotExistsException {
         return userRepository.findById(id).orElseThrow(UserNotExistsException::new);
     }
 
-//    public User updateUser(User user) throws UserNotExistsException {
-//        if (userRepository.save(user) != null) {
-//            return user;
-//        } else {
-//            throw new UserNotExistsException();
-//        }
-//    }
+    public User disableUser(Integer userId) throws UserNotExistsException {
+        User user = findById(userId);
+        user.setUser_status(disabled);
+        return userRepository.save(user);
+    }
 
-//    public void removeUser(Integer id) throws UserNotExistsException {
-//        if (userRepository.remove(id) == 0) {
-//            throw new UserNotExistsException();
-//        }
-//    }
+  /*  public User updateUser(User user) throws UserNotExistsException {
+        if (userRepository.save(user) != null) {
+            return user;
+        } else {
+            throw new UserNotExistsException();
+        }
+    }*/
 
     public MostCalledProjection getMostCalledFromUser(Integer userId) {
         return userRepository.getMostCalledFromUser(userId);
