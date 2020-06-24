@@ -84,19 +84,14 @@ public class BackOfficeWebController {
     }
 
     @PutMapping("/phoneline")
-    public ResponseEntity phoneLineAction(@RequestHeader("Authorization") String sessionToken, @RequestBody PhoneLineActionRequest action) throws PhoneLineNotExistsException {
+    public ResponseEntity actionPhoneLine(@RequestHeader("Authorization") String sessionToken, @RequestBody PhoneLineActionRequest action) throws PhoneLineNotExistsException {
         phoneLineService.updateStatus(action.getStatus().toString(), action.getPhoneLineId());
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/phoneline")
-    public ResponseEntity phoneLineAction(@RequestHeader("Authorization") String sessionToken, @RequestParam("idPhoneLine") Integer idPhoneLine) throws PhoneLineNotExistsException {
+    public ResponseEntity disablePhoneLine(@RequestHeader("Authorization") String sessionToken, @RequestParam("idPhoneLine") Integer idPhoneLine) throws PhoneLineNotExistsException {
         phoneLineService.updateStatus(PhoneLine.Status.disabled.toString(), idPhoneLine);
         return ResponseEntity.ok().build();
     }
-
-
-
-
-
 }

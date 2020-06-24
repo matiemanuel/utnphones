@@ -36,8 +36,9 @@ public class PhoneLineService {
         return phonelineRepository.findById(id).orElseThrow(PhoneLineNotExistsException::new);
     }
 
-    public void updateStatus(String status, Integer idPhoneLine) throws PhoneLineNotExistsException {
+    public PhoneLine updateStatus(String status, Integer idPhoneLine) throws PhoneLineNotExistsException {
         PhoneLine pl= this.findById(idPhoneLine);
         phonelineRepository.updateStatus(status ,idPhoneLine);
+        return pl;
     }
 }

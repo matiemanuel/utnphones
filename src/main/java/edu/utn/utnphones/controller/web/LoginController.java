@@ -7,12 +7,19 @@ import edu.utn.utnphones.exceptions.UserNotExistsException;
 import edu.utn.utnphones.exceptions.ValidationException;
 import edu.utn.utnphones.model.User;
 import edu.utn.utnphones.session.SessionManager;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 
 @RestController
 @RequestMapping("/")
@@ -27,15 +34,18 @@ public class LoginController {
         this.sessionManager = sessionManager;
     }
 
-
+    @ApiResponses(value = { @ApiResponse(code = HttpServletResponse.SC_OK, message = "Perfecto"),
+            @ApiResponse(code = HttpServletResponse.SC_UNAUTHORIZED, message = "raja de aca"),
+            @ApiResponse(code = HttpServletResponse.SC_FORBIDDEN, message = "No pasas"),
+            @ApiResponse(code = HttpServletResponse.SC_NOT_FOUND, message = "Lo que ?") })
     @PostMapping("login")
-    public ResponseEntity login(@RequestBody LoginRequestDto loginDto) throws InvalidLoginException, ValidationException {
+    public ResponseEntity login(@RequestBody LoginRequestDto loginDto) throws InvalidLoginException {
         ResponseEntity response;
         try {
             User u = userController.login(loginDto.getEmail(), loginDto.getPassword());
             String token = sessionManager.createSession(u);
             response = ResponseEntity.ok().headers(createHeaders(token)).build();
-        } catch (UserNotExistsException e) {
+        } catch (UserNotExistsException | ValidationException e) {
             throw new InvalidLoginException(e);
         }
         return response;
