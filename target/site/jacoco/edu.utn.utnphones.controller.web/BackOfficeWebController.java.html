@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BackOfficeWebController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">utnphones</a> &gt; <a href="index.source.html" class="el_package">edu.utn.utnphones.controller.web</a> &gt; <span class="el_source">BackOfficeWebController.java</span></div><h1>BackOfficeWebController.java</h1><pre class="source lang-java linenums">package edu.utn.utnphones.controller.web;
+
+import edu.utn.utnphones.dto.PhoneLineActionRequest;
+import edu.utn.utnphones.exceptions.PhoneLineNotExistsException;
+import edu.utn.utnphones.exceptions.UserNotExistsException;
+import edu.utn.utnphones.model.*;
+import edu.utn.utnphones.service.*;
+import edu.utn.utnphones.session.SessionManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static edu.utn.utnphones.model.User.Status.active;
+import static edu.utn.utnphones.model.User.Status.disabled;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
+
+@RestController
+@RequestMapping(&quot;/backoffice&quot;)
+public class BackOfficeWebController {
+
+    private final SessionManager sessionManager;
+    private final CallService callService;
+    private final UserService userService;
+    private final PhoneLineService phoneLineService;
+    private final TariffService tariffService;
+    private final InvoiceService invoiceService;
+
+// SOLO VAN A QUEDAR LAS CONTROLADORAS WEB, LAS DEMAS VAN A SER ELIMINADAS PARA EVITAR TESTEOS INNECESARIOS         
+// TODO: 15/6/2020 MANEJO DE CLIENTES  UPDATE AND REMOVE
+
+    @Autowired
+    public BackOfficeWebController(UserService userService,CallService callService,PhoneLineService phoneLineService,
+<span class="fc" id="L39">            TariffService tariffService,InvoiceService invoiceService, SessionManager sessionManager) {</span>
+<span class="fc" id="L40">        this.userService = userService;</span>
+<span class="fc" id="L41">        this.sessionManager = sessionManager;</span>
+<span class="fc" id="L42">        this.callService = callService;</span>
+<span class="fc" id="L43">        this.tariffService = tariffService;</span>
+<span class="fc" id="L44">        this.phoneLineService = phoneLineService;</span>
+<span class="fc" id="L45">        this.invoiceService = invoiceService;</span>
+<span class="fc" id="L46">    }</span>
+
+    //USERS
+
+    @ResponseStatus(OK)
+    @PostMapping(&quot;/user&quot;)
+    public ResponseEntity newUser(@RequestHeader(&quot;Authorization&quot;) String sessionToken, @RequestBody User user ){
+<span class="fc" id="L53">        return ResponseEntity.status(CREATED).body(userService.addUser(user));</span>
+    }
+
+    @ResponseStatus(OK)
+    @GetMapping(&quot;/user&quot;)
+    public ResponseEntity getById(@RequestHeader(&quot;Authorization&quot;) String sessionToken, @RequestParam(&quot;userId&quot;) Integer userId ) throws UserNotExistsException {
+<span class="fc" id="L59">        return ResponseEntity.status(OK).body(userService.findById(userId));</span>
+    }
+
+    @ResponseStatus(OK)
+    @DeleteMapping(&quot;/user&quot;)
+    public ResponseEntity disableUser(@RequestHeader(&quot;Authorization&quot;) String sessionToken, @RequestParam(&quot;userId&quot;) Integer userId ) throws UserNotExistsException {
+<span class="fc" id="L65">        return ResponseEntity.status(OK).body(userService.disableUser(userId));</span>
+    }
+
+    @ResponseStatus(OK)
+    @GetMapping(&quot;/users&quot;)
+    public ResponseEntity&lt;List&lt;User&gt;&gt; getUsers(@RequestHeader(&quot;Authorization&quot;) String sessionToken) {
+<span class="fc" id="L71">        List&lt;User&gt; temp = userService.getAll();</span>
+<span class="fc" id="L72">        List&lt;User&gt; users = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        for(User user : temp)</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">            if(user.getUser_status().equals(active))</span>
+<span class="fc" id="L75">                users.add(user);</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        return (users.size() &gt; 0) ? ResponseEntity.ok(users) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();</span>
+    }
+
+    //PHONELINES
+    @ResponseStatus(OK)
+    @PostMapping(&quot;/phoneline&quot;)
+    public ResponseEntity addPhoneline(@RequestHeader(&quot;Authorization&quot;) String sessionToken, @RequestBody PhoneLine phoneline) {
+<span class="fc" id="L83">        return ResponseEntity.status(CREATED).body(phoneLineService.addPhoneLine(phoneline));</span>
+    }
+
+    @PutMapping(&quot;/phoneline&quot;)
+    public ResponseEntity actionPhoneLine(@RequestHeader(&quot;Authorization&quot;) String sessionToken, @RequestBody PhoneLineActionRequest action) throws PhoneLineNotExistsException {
+<span class="fc" id="L88">        phoneLineService.updateStatus(action.getStatus().toString(), action.getPhoneLineId());</span>
+<span class="fc" id="L89">        return ResponseEntity.ok().build();</span>
+    }
+
+    @DeleteMapping(&quot;/phoneline&quot;)
+    public ResponseEntity disablePhoneLine(@RequestHeader(&quot;Authorization&quot;) String sessionToken, @RequestParam(&quot;idPhoneLine&quot;) Integer idPhoneLine) throws PhoneLineNotExistsException {
+<span class="fc" id="L94">        phoneLineService.updateStatus(PhoneLine.Status.disabled.toString(), idPhoneLine);</span>
+<span class="fc" id="L95">        return ResponseEntity.ok().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

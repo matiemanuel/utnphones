@@ -11,8 +11,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 public class AdviceController extends ResponseEntityExceptionHandler {
 
-
-
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(InvalidLoginException.class)
     public ErrorResponseDto handleLoginException(InvalidLoginException exc) {
@@ -30,6 +28,5 @@ public class AdviceController extends ResponseEntityExceptionHandler {
     public ErrorResponseDto handleUserNotExists() {
         return new ErrorResponseDto(3, "User not exists");
     }
-
 
 }

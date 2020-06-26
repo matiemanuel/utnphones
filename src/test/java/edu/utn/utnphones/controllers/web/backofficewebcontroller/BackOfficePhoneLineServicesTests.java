@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 
 import static edu.utn.utnphones.model.PhoneLine.Status.*;
 import static edu.utn.utnphones.model.PhoneLine.Type.mobile;
+import static javax.servlet.http.HttpServletResponse.SC_CREATED;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -45,13 +46,14 @@ public class BackOfficePhoneLineServicesTests {
         when(phoneLineService.addPhoneLine(activePhoneLine)).thenReturn(activePhoneLine);
         when(phoneLineService.updateStatus(disabled.toString(), 1)).thenReturn(desactivatedPhoneLine);
         when(phoneLineService.updateStatus(suspended.toString(), 1)).thenReturn(suspendedPhoneLine);
+        when(phoneLineService.updateStatus(disabled.toString(), -1)).thenThrow(PhoneLineNotExistsException.class);
         when(phoneLineService.updateStatus(active.toString(), -1)).thenThrow(PhoneLineNotExistsException.class);
     }
 
     @Test
     public void createPhoneLine() {
         ResponseEntity response = controller.addPhoneline(token, activePhoneLine);
-        assertEquals(SC_OK, response.getStatusCodeValue());
+        assertEquals(SC_CREATED, response.getStatusCodeValue());
     }
 
     @Test

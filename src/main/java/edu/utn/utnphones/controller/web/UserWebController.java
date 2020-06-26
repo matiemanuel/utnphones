@@ -64,7 +64,14 @@ public class UserWebController {
     }
 
     @GetMapping("/mostCalled")
-    public MostCalledProjection getMostCalledFromUser(@RequestHeader("Authorization") String authorization) {
-        return userService.getMostCalledFromUser(sessionManager.getCurrentUser(authorization).getId());
+    public ResponseEntity<MostCalledProjection> getMostCalledFromUser(@RequestHeader("Authorization") String authorization) {
+        MostCalledProjection mostCalledFromUser = userService.getMostCalledFromUser(sessionManager.getCurrentUser(authorization).getId());
+        if(mostCalledFromUser == null){
+            return ResponseEntity.notFound().build();
+        }
+        if(mostCalledFromUser.getMostCalled() == null){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(mostCalledFromUser);
     }
 }
