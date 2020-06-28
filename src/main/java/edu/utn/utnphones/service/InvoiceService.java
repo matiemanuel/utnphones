@@ -1,6 +1,6 @@
 package edu.utn.utnphones.service;
 
-import edu.utn.utnphones.exceptions.InvoiceNotExistsException;
+import edu.utn.utnphones.exceptions.RecordNotExistsException;
 import edu.utn.utnphones.model.Invoice;
 import edu.utn.utnphones.projections.InvoiceByDates;
 import edu.utn.utnphones.repository.InvoiceRepository;
@@ -27,8 +27,8 @@ public class InvoiceService {
         return invoiceRepository.findAll();
     }
 
-    public Invoice findById(Integer id) throws InvoiceNotExistsException {
-        return invoiceRepository.findById(id).orElseThrow(InvoiceNotExistsException::new);
+    public Invoice findById(Integer id) throws RecordNotExistsException {
+        return invoiceRepository.findById(id).orElseThrow(() -> new RecordNotExistsException("Invoice id provided doesn't exist"));
     }
 
     public List<Invoice> getInvoicesByUser(Integer idUser) {

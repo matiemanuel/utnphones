@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CallRequestDto {
+public class NewCallRequestDto {
 
     String origin;
     String destiny;

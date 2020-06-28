@@ -21,7 +21,7 @@ public class SessionManager {
     public String createSession(User user) {
         String token;
 
-        if (user.getUser_type() == employee) {
+        if (user.getUserType() == employee) {
             token = "backoffice";
             System.out.println("Logueado como empleado");
         } else {

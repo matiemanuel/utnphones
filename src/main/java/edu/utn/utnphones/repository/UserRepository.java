@@ -17,16 +17,19 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "Select * from users where name = ?1", nativeQuery = true)
     public List<User> findbyName(String name);
 
-//    @Modifying
-//    @Query("update users u set u.name = ?1, u.lastname = ?2, u.email = ?4, u.password where u.id = ?3")
-//    public void update(String f)
-
     User getByEmailAndPassword(String email, String password);
 
     public Optional<User> findById(Integer id);
 
-
     @Query(value = "call `sp_get_most_called_from_user`(?1)", nativeQuery = true)
-    public MostCalledProjection getMostCalledFromUser(Integer userId);
+    public Optional<MostCalledProjection> getMostCalledFromUser(Integer userId);
 
+    @Query(value = "Select * from users where email = ?1", nativeQuery = true)
+    public User findByEmail(String Email);
+
+    @Query(value = "UPDATE users " +
+            "SET name = ?1, lastname = ?2, dni = ?3, password = ?4, id_city = ?5, type = ?6, status = ?7" +
+            "WHERE email = ?8", nativeQuery = true)
+    public User updateUser(String name, String lastName, String dni, String password, Integer id_city, String type,
+                           String status, String email);
 }

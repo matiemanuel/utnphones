@@ -24,7 +24,4 @@ public interface PhoneLineRepository extends JpaRepository<PhoneLine, Integer> {
     @Query(value = "update phone_lines set status = ?1 where id_phone_line = ?2", nativeQuery = true)
     public void updateStatus(String status, Integer idPhoneLine);
 
-
-
-
 }

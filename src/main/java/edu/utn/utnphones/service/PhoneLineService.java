@@ -1,6 +1,7 @@
 package edu.utn.utnphones.service;
 
-import edu.utn.utnphones.exceptions.PhoneLineNotExistsException;
+import edu.utn.utnphones.exceptions.RecordAlreadyExistsException;
+import edu.utn.utnphones.exceptions.RecordNotExistsException;
 import edu.utn.utnphones.model.PhoneLine;
 import edu.utn.utnphones.repository.PhoneLineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,12 @@ public class PhoneLineService {
         this.phonelineRepository = phonelineRepository;
     }
 
-    public PhoneLine addPhoneLine(PhoneLine newPhoneLine) {
-        phonelineRepository.save(newPhoneLine);
-        return newPhoneLine;
+    public PhoneLine addPhoneLine(PhoneLine newPhoneLine) throws RecordAlreadyExistsException {
+        PhoneLine saved = phonelineRepository.save(newPhoneLine);
+        if (isNull(saved)) {
+            throw new RecordAlreadyExistsException("Number phoneline is already added");
+        }
+        return saved;
     }
 
     public List<PhoneLine> getAll(String lineNumber) {
@@ -32,13 +36,13 @@ public class PhoneLineService {
         return phonelineRepository.findbyLineNumber(lineNumber);
     }
 
-    public PhoneLine findById(Integer id) throws PhoneLineNotExistsException {
-        return phonelineRepository.findById(id).orElseThrow(PhoneLineNotExistsException::new);
+    public PhoneLine findById(Integer id) throws RecordNotExistsException {
+        return phonelineRepository.findById(id).orElseThrow(() -> new RecordNotExistsException("Phoneline requested doesn't exists"));
     }
 
-    public PhoneLine updateStatus(String status, Integer idPhoneLine) throws PhoneLineNotExistsException {
-        PhoneLine pl= this.findById(idPhoneLine);
-        phonelineRepository.updateStatus(status ,idPhoneLine);
+    public PhoneLine updateStatus(String status, Integer idPhoneLine) throws RecordNotExistsException {
+        PhoneLine pl = this.findById(idPhoneLine);
+        phonelineRepository.updateStatus(status, idPhoneLine);
         return pl;
     }
 }

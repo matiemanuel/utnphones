@@ -40,8 +40,9 @@ public class PhoneLine {
     @Column(name = "type")
     private Type phoneLineType;
 
-    @OneToMany(mappedBy = "phoneline")
-    private List<Invoice> invoices;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_invoice")
+    private Invoice invoice;
 
     public enum Type {
         mobile, residential;

@@ -1,5 +1,6 @@
 package edu.utn.utnphones.repository;
 
+import edu.utn.utnphones.exceptions.RecordNotExistsException;
 import edu.utn.utnphones.model.Invoice;
 import edu.utn.utnphones.projections.InvoiceByDates;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -2,11 +2,9 @@ package edu.utn.utnphones.controller.web;
 
 import edu.utn.utnphones.controller.UserController;
 import edu.utn.utnphones.dto.LoginRequestDto;
-import edu.utn.utnphones.exceptions.InvalidLoginException;
-import edu.utn.utnphones.exceptions.UserNotExistsException;
+import edu.utn.utnphones.exceptions.RecordNotExistsException;
 import edu.utn.utnphones.exceptions.ValidationException;
 import edu.utn.utnphones.model.User;
-import edu.utn.utnphones.service.UserService;
 import edu.utn.utnphones.session.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -17,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/")
 public class LoginController {
 
-    UserController userController;ç
+    UserController userController;
     SessionManager sessionManager;
 
     @Autowired
@@ -27,18 +25,13 @@ public class LoginController {
     }
 
     @PostMapping("login")
-    public ResponseEntity login(@RequestBody LoginRequestDto loginDto) throws InvalidLoginException {
+    public ResponseEntity login(@RequestBody LoginRequestDto loginDto) throws ValidationException, RecordNotExistsException {
         ResponseEntity response;
-        try {
-            User u = userController.login(loginDto.getEmail(), loginDto.getPassword());
-            String token = sessionManager.createSession(u);
-            response = ResponseEntity.ok().headers(createHeaders(token)).build();
-        } catch (UserNotExistsException | ValidationException e) {
-            throw new InvalidLoginException(e);
-        }
+        User u = userController.login(loginDto.getEmail(), loginDto.getPassword());
+        String token = sessionManager.createSession(u);
+        response = ResponseEntity.ok().headers(createHeaders(token)).build();
         return response;
     }
-
 
     @PostMapping("logout")
     public ResponseEntity logout(@RequestHeader("Authorization") String token) {

@@ -1,7 +1,9 @@
 package edu.utn.utnphones.controller;
 
 
-import edu.utn.utnphones.exceptions.UserNotExistsException;
+import edu.utn.utnphones.exceptions.InvalidRequestException;
+import edu.utn.utnphones.exceptions.RecordAlreadyExistsException;
+import edu.utn.utnphones.exceptions.RecordNotExistsException;
 import edu.utn.utnphones.exceptions.ValidationException;
 import edu.utn.utnphones.model.User;
 import edu.utn.utnphones.service.UserService;
@@ -21,7 +23,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    public User login(String username, String password) throws UserNotExistsException, ValidationException {
+    public User login(String username, String password) throws RecordNotExistsException, ValidationException {
         if ((username != null) && (password != null)) {
             return userService.login(username, password);
         } else {
@@ -30,12 +32,12 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User getUserbyId(@PathVariable Integer userId) throws UserNotExistsException {
+    public User getUserbyId(@PathVariable Integer userId) throws RecordNotExistsException {
         return this.userService.findById(userId);
     }
 
     @PostMapping("/")
-    public User addUser(@RequestBody User newUser) {
+    public User addUser(@RequestBody User newUser) throws InvalidRequestException, RecordAlreadyExistsException {
         return userService.addUser(newUser);
     }
 
