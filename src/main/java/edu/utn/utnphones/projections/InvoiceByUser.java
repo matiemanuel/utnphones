@@ -9,6 +9,7 @@ public interface InvoiceByUser {
     public String getLineNumber();
     public Type getLineType();
     public Double getTotalPrice();
+    public boolean getPaid();
     public String getDate();
     public String getExpirationDate();
 

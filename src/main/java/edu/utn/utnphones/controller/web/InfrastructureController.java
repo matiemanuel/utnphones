@@ -30,7 +30,7 @@ public class InfrastructureController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<URI> addPhoneCall(@RequestBody @Valid NewCallRequestDto newCall) throws InvalidRequestException, RecordNotExistsException {
+    public ResponseEntity<URI> addPhoneCall(@RequestBody NewCallRequestDto newCall) throws InvalidRequestException, RecordNotExistsException {
         Call call = callService.addCall(newCall.getOrigin(), newCall.getDestiny(), newCall.getDuration());
         return ResponseEntity.created(RestUtils.getLocation(call)).build();
     }

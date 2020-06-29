@@ -31,7 +31,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/api")
-public class UserWebController {
+public class WebUserController {
 
     private final CallService callService;
     private final InvoiceService invoiceService;
@@ -39,7 +39,7 @@ public class UserWebController {
     private final SessionManager sessionManager;
 
     @Autowired
-    public UserWebController(CallService callService, InvoiceService invoiceService, UserService userService, SessionManager sessionManager) {
+    public WebUserController(CallService callService, InvoiceService invoiceService, UserService userService, SessionManager sessionManager) {
         this.callService = callService;
         this.invoiceService = invoiceService;
         this.userService = userService;
@@ -54,21 +54,17 @@ public class UserWebController {
     }
 
     @GetMapping("/calls")
-    public ResponseEntity<List<Call>> getCallsByUser(@RequestHeader("Authorization") String sessionToken,
-                                                     @RequestParam("userId") Integer userId) throws InvalidRequestException {
+    public ResponseEntity<List<Call>> getCallsByUser(@RequestHeader("Authorization") String sessionToken) throws InvalidRequestException {
         List<Call> calls = new ArrayList<>();
-        User currentUser = sessionManager.getCurrentUser(sessionToken);
         calls = callService.getCallsByUser(sessionManager.getCurrentUser(sessionToken).getId());
         return (calls.size() > 0) ? ResponseEntity.ok(calls) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/callsByDates")
     public ResponseEntity<List<CallsByDates>> getCallsByDates(@RequestHeader("Authorization") String sessionToken,
-                                                              @RequestParam("userId") Integer userId,
                                                               @RequestParam("from") String from,
                                                               @RequestParam("to") String to) throws InvalidRequestException {
         List<CallsByDates> calls = new ArrayList<>();
-        User currentUser = sessionManager.getCurrentUser(sessionToken);
         try {
             if(!isNull(from) && !isNull(to)){
                 Date fromDate = new SimpleDateFormat("dd/MM/yyyy").parse(from);
@@ -111,14 +107,14 @@ public class UserWebController {
     }
 
     @GetMapping("/mostCalled")
-    public ResponseEntity<MostCalledProjection> getMostCalledFromUser(@RequestHeader("Authorization") String authorization) throws InvalidRequestException {
-        MostCalledProjection mostCalledFromUser = userService.getMostCalledFromUser(sessionManager.getCurrentUser(authorization).getId());
-        if (mostCalledFromUser == null) {
-            return ResponseEntity.notFound().build();
-        }
-        if (mostCalledFromUser.getMostCalled() == null) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(mostCalledFromUser);
+    public ResponseEntity<List<MostCalledProjection>> getMostCalledFromUser(@RequestHeader("Authorization") String authorization,
+                                                                      @RequestParam(name = "size", required = false) Integer size)
+            throws InvalidRequestException, RecordNotExistsException {
+        if(isNull(size))
+            size = 1;
+        if(size < 1)
+            throw new InvalidRequestException("Please provide size > 0");
+        List<MostCalledProjection> mostCalledFromUser = userService.getMostCalledFromUser(sessionManager.getCurrentUser(authorization).getId(), size);
+        return (mostCalledFromUser.size() > 0)? ResponseEntity.ok(mostCalledFromUser) : ResponseEntity.noContent().build();
     }
 }

@@ -13,10 +13,6 @@ public class UpdateUserDto {
 
     private String lastname;
 
-    private String dni;
-
-    private String email;
-
     private String password;
 
     private City city;

@@ -7,7 +7,9 @@ import edu.utn.utnphones.repository.PhoneLineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Objects.isNull;
 
@@ -29,11 +31,17 @@ public class PhoneLineService {
         return saved;
     }
 
-    public List<PhoneLine> getAll(String lineNumber) {
-        if (isNull(lineNumber)) {
+    public List<PhoneLine> getAll(Integer phoneLineId) {
+        ArrayList<PhoneLine> phonelines = new ArrayList<>();
+        if (isNull(phoneLineId)) {
             return phonelineRepository.findAll();
         }
-        return phonelineRepository.findbyLineNumber(lineNumber);
+        Optional<PhoneLine> byId = phonelineRepository.findById(phoneLineId);
+        if (byId.isPresent()){
+            phonelines.add(byId.get());
+            return phonelines;
+        }
+        return phonelines;
     }
 
     public PhoneLine findById(Integer id) throws RecordNotExistsException {

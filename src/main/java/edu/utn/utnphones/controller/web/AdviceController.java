@@ -49,7 +49,7 @@ public class AdviceController extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(ConstraintViolationException.class)
     public ErrorResponseDto handleConstraintViolationException(ConstraintViolationException exc) {
-        return new ErrorResponseDto(6, "SQL constraint conflict: " + exc.getConstraintName() + "it's already used");
+        return new ErrorResponseDto(6, "SQL constraint conflict: " + exc.getConstraintName() + " it's already used");
     }
 
 }

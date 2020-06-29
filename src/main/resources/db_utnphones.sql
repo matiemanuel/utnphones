@@ -86,14 +86,14 @@ CREATE TABLE IF NOT EXISTS `phone_lines` (
 ENGINE = InnoDB;
 
 CREATE TABLE IF NOT EXISTS `invoices` (
-  `id_invoice` INT NOT NULL AUTO_INCREMENT,
+  `id_invoice` INT NULL AUTO_INCREMENT,
   `number_of_calls` INT NULL,
   `price_cost` DOUBLE NULL,
   `total_price` DOUBLE NULL,
   `invoice_date` DATE NULL,
   `expiration_date` DATE NULL,
   `id_phone_line` INT NULL,
-  `paid` BOOLEAN NULL,
+  `paid` BOOLEAN NOT NULL,
   PRIMARY KEY (`id_invoice`),
   CONSTRAINT `fk_id_phone_line`
     FOREIGN KEY (`id_phone_line`)
@@ -185,19 +185,7 @@ end$$
 DELIMITER $$
 CREATE trigger trigger_generate_user before insert on users for each row
 begin
-	if exists (select * from users where email = new.email
-    and dni = new.dni )
-    then
-	signal sqlstate '45000'
-	set message_text = 'Username (email) already exists';
-	end if;
-end$$
-
-DELIMITER $$
-CREATE trigger trigger_update_user before update on users for each row
-begin
-	if exists (select * from users where email = new.email
-    and dni = new.dni )
+	if exists (select * from users where email = new.email)
     then
 	signal sqlstate '45000'
 	set message_text = 'Username (email) already exists';
@@ -207,17 +195,6 @@ end$$
 /*Previene phone_lines duplicados*/
 DELIMITER $$
 CREATE trigger trigger_generate_phone_line before insert on phone_lines for each row
-begin
-	if exists (select * from phone_lines where line_number = new.line_number
-    and id_city = new.id_city )
-    then
-	signal sqlstate '45000'
-	set message_text = 'Phone line already exists';
-	end if;
-end$$
-
-DELIMITER $$
-CREATE trigger trigger_update_phone_line before update on phone_lines for each row
 begin
 	if exists (select * from phone_lines where line_number = new.line_number
     and id_city = new.id_city )
@@ -331,21 +308,21 @@ DELIMITER $$
 CREATE PROCEDURE `sp_callsByUserAndDates`( IN `id_user` INT,IN `date_from` DATE,IN `date_to` DATE)-- working
 BEGIN
 select
-    	c.id_call as "CALL ID",
-		pl.line_number as "ORIGIN NUMBER",
-        ct.name as "ORIGIN CITY",
-		pl2.line_number as "DESTINY NUMBER",
-        ct2.name as "DESTINY CITY",
-        c.duration as "DURATION",
-        c.total_price as "TOTAL PRICE",
-		c.call_date as "DATE"
+    	c.id_call as "callId",
+		pl.line_number as "originNumber",
+        ct.name as "originCity",
+		pl2.line_number as "destinyNumber",
+        ct2.name as "destinyCity",
+        c.duration as "duration",
+        c.total_price as "totalPrice",
+		c.call_date as "date"
 
 	from calls c
 		inner join phone_lines pl on c.origin_number = pl.line_number
 		inner join phone_lines pl2 on c.destiny_number = pl2.line_number
 		inner join cities ct on pl.id_city = ct.id_city
 		inner join cities ct2 on pl2.id_city = ct2.id_city
-	where pl.id_user = id_user and call_date between date_from and date_to;
+	where pl.id_user = id_user and call_date between date_from and date_to + 1;
 END$$
 DELIMITER ;
 
@@ -353,14 +330,14 @@ DELIMITER $$
 CREATE PROCEDURE `sp_invoicesByUser`( IN `id_user` INT)
 BEGIN
 select
-    	i.id_invoice as "INVOICE ID",
-		i.number_of_calls as "NUMBER OF CALLS",
-		pl.line_number as "LINE NUMBER",
-        pl.type as "LINE TYPE",
-        i.total_price as "TOTAL PRICE",
-        i.paid as "PAID",
-		i.invoice_date as "DATE",
-        i.expiration_date as "EXPIRATION DATE"
+    	i.id_invoice as "invoiceId",
+		i.number_of_calls as "numberOfCalls",
+		pl.line_number as "lineNumber",
+        pl.type as "lineType",
+        i.total_price as "totalPrice",
+        i.paid as "paid",
+		i.invoice_date as "date",
+        i.expiration_date as "expirationDate"
 
 	from invoices i
 		inner join phone_lines pl on i.id_phone_line = pl.id_phone_line
@@ -369,21 +346,21 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE PROCEDURE `sp_invoicesByUserAndDates`( IN `id_user` INT,IN `date_from` DATE,IN `date_to` DATE)-- working
+CREATE PROCEDURE `sp_invoicesByUserAndDates`( IN `id_user` INT,IN `date_from` DATE,IN `date_to` DATE)
 BEGIN
 select
-    	i.id_invoice as "INVOICE ID",
-		i.number_of_calls as "NUMBER OF CALLS",
-		pl.line_number as "LINE NUMBER",
-        pl.type as "LINE TYPE",
-        i.total_price as "TOTAL PRICE",
-        i.paid as "PAID",
-		i.invoice_date as "DATE",
-        i.expiration_date as "EXPIRATION DATE"
+    	i.id_invoice as "invoiceId",
+		i.number_of_calls as "numberOfCalls",
+		pl.line_number as "lineNumber",
+        pl.type as "lineType",
+        i.total_price as "totalPrice",
+        i.paid as "paid",
+		i.invoice_date as "date",
+        i.expiration_date as "expirationDate"
 
 	from invoices i
 		inner join phone_lines pl on i.id_phone_line = pl.id_phone_line
-	where pl.id_user = id_user and invoice_date between date_from and date_to;
+	where pl.id_user = id_user and invoice_date between date_from and date_to + 1;
 END$$
 DELIMITER ;
 
@@ -402,6 +379,20 @@ group by destiny_number
 order by count(destiny_number) desc
 LIMIT size;
 end$$
+DELIMITER ;
+
+-- AUTOMATED PROCESS --
+-- Hay un proceso automático que todos los 1º de cada mes, corre automáticamente
+-- y verifica las llamadas no facturadas y genera una nueva factura con un vencimiento
+-- a 15 días. Debemos guardar solo el estado de si la factura esta paga o no
+DROP EVENT IF EXISTS `e_check_calls`;
+DELIMITER $$
+CREATE EVENT `e_check_calls`
+  ON SCHEDULE EVERY 1 MONTH STARTS now()
+  ON COMPLETION PRESERVE
+DO BEGIN
+  call sp_verify_calls_and_generate_invoices();
+END$$
 DELIMITER ;
 
 -- USERS --

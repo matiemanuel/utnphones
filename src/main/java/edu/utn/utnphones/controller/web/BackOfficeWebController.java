@@ -28,7 +28,6 @@ import java.util.List;
 
 import static edu.utn.utnphones.model.User.Status.active;
 import static java.util.Objects.isNull;
-import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
@@ -91,14 +90,14 @@ public class BackOfficeWebController {
                                           @RequestParam(value = "userId", required = true) Integer userId,
                                           @RequestBody UpdateUserDto updatedUser) throws RecordNotExistsException, RecordAlreadyExistsException {
         return ResponseEntity.status(OK).body(RestUtils.getLocation(userService.updateUser(userId, updatedUser)));
-    }
+    } // todo no funciona
 
     //PHONELINES
 
     @GetMapping("/phoneline")
-    public ResponseEntity getPhonelineByNumber(@RequestParam("lineNumber") String lineNumber) {
-        List<PhoneLine> phonelines = phoneLineService.getAll(lineNumber);
-        if(isNull(lineNumber))
+    public ResponseEntity getPhonelineById(@RequestParam(name = "id_phone_line", required = false) Integer phoneLineId) {
+        List<PhoneLine> phonelines = phoneLineService.getAll(phoneLineId);
+        if (isNull(phoneLineId))
             return (phonelines.size() > 0) ? ResponseEntity.ok(phonelines) : ResponseEntity.noContent().build();
         return (phonelines.size() > 0) ? ResponseEntity.ok(phonelines.get(0)) : ResponseEntity.notFound().build();
     }
@@ -106,7 +105,7 @@ public class BackOfficeWebController {
     @PostMapping("/phoneline")
     public ResponseEntity<URI> addPhoneline(@RequestHeader("Authorization") String sessionToken, @RequestBody PhoneLine phoneline) throws RecordAlreadyExistsException {
         return ResponseEntity.created(RestUtils.getLocation(phoneLineService.addPhoneLine(phoneline))).build();
-    }
+    }//todo correcciones
 
     @PutMapping("/phoneline")
     public ResponseEntity actionPhoneLine(@RequestHeader("Authorization") String sessionToken, @RequestBody PhoneLineActionRequest action) throws RecordNotExistsException {
@@ -134,7 +133,7 @@ public class BackOfficeWebController {
                                                      @RequestParam("userId") Integer userId) throws InvalidRequestException {
         List<Call> calls = new ArrayList<>();
         User currentUser = sessionManager.getCurrentUser(sessionToken);
-        if(isNull(userId))
+        if (isNull(userId))
             throw new InvalidRequestException("Please provide id user (userId)");
         calls = callService.getCallsByUser(userId);
         return (calls.size() > 0) ? ResponseEntity.ok(calls) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -142,19 +141,19 @@ public class BackOfficeWebController {
 
     @GetMapping("/callsByDates")
     public ResponseEntity<List<CallsByDates>> getCallsByDates(@RequestHeader("Authorization") String sessionToken,
-                                                                  @RequestParam("userId") Integer userId,
-                                                                  @RequestParam("from") String from,
-                                                                  @RequestParam("to") String to) throws InvalidRequestException {
+                                                              @RequestParam("userId") Integer userId,
+                                                              @RequestParam("from") String from,
+                                                              @RequestParam("to") String to) throws InvalidRequestException {
         List<CallsByDates> calls = new ArrayList<>();
         User currentUser = sessionManager.getCurrentUser(sessionToken);
         try {
-            if(isNull(userId))
+            if (isNull(userId))
                 throw new InvalidRequestException("Please provide id user (userId)");
-            if(!isNull(from) && !isNull(to)){
+            if (!isNull(from) && !isNull(to)) {
                 Date fromDate = new SimpleDateFormat("dd/MM/yyyy").parse(from);
                 Date toDate = new SimpleDateFormat("dd/MM/yyyy").parse(to);
                 calls = callService.getCallsByDates(userId, fromDate, toDate);
-            }else
+            } else
                 throw new InvalidRequestException("Please provide service with dates 'from' and 'to'");
             return (calls.size() > 0) ? ResponseEntity.ok(calls) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (ParseException ex) {
@@ -166,10 +165,10 @@ public class BackOfficeWebController {
 
     @GetMapping("/invoices")
     public ResponseEntity<List<InvoiceByUser>> getInvoicesByUser(@RequestHeader("Authorization") String sessionToken,
-                                                                  @RequestParam("userId") Integer userId) throws InvalidRequestException {
+                                                                 @RequestParam("userId") Integer userId) throws InvalidRequestException {
         List<InvoiceByUser> invoices = new ArrayList<>();
         User currentUser = sessionManager.getCurrentUser(sessionToken);
-        if(isNull(userId))
+        if (isNull(userId))
             throw new InvalidRequestException("Please provide id user (userId)");
         invoices = invoiceService.getInvoicesByUser(userId);
         return (invoices.size() > 0) ? ResponseEntity.ok(invoices) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -183,19 +182,17 @@ public class BackOfficeWebController {
         List<InvoiceByUser> invoices = new ArrayList<>();
         User currentUser = sessionManager.getCurrentUser(sessionToken);
         try {
-            if(isNull(userId))
+            if (isNull(userId))
                 throw new InvalidRequestException("Please provide id user (userId)");
-            if(!isNull(from) && !isNull(to)){
+            if (!isNull(from) && !isNull(to)) {
                 Date fromDate = new SimpleDateFormat("dd/MM/yyyy").parse(from);
                 Date toDate = new SimpleDateFormat("dd/MM/yyyy").parse(to);
                 invoices = invoiceService.getInvoicesByDates(userId, fromDate, toDate);
-            }else
+            } else
                 throw new InvalidRequestException("Please provide service with dates 'from' and 'to'");
             return (invoices.size() > 0) ? ResponseEntity.ok(invoices) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (ParseException ex) {
             throw new InvalidRequestException("Something went wrong when parsing dates, please provide dates with format: dd/MM/yyyy");
         }
     }
-
-
 }

@@ -70,10 +70,6 @@ public class User {
             this.name = update.getName();
         if(!isNull(update.getLastname()))
             this.lastname = update.getLastname();
-        if(!isNull(update.getDni()))
-            this.dni = update.getDni();
-        if(!isNull(update.getEmail()))
-            this.email = update.getEmail();
         if(!isNull(update.getPassword()))
             this.password = update.getPassword();
         if(!isNull(update.getCity()))

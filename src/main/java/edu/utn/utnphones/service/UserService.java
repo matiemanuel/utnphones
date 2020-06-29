@@ -54,23 +54,22 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User updateUser(Integer id, UpdateUserDto newUserData) throws RecordNotExistsException, RecordAlreadyExistsException {
+    public User updateUser(Integer id, UpdateUserDto newUserData) throws RecordNotExistsException {
         Optional<User> userById = userRepository.findById(id);
         if(!userById.isPresent())
             throw new RecordNotExistsException("Id provided is not exists on users data");
-        if(!isNull(userRepository.findByEmail(newUserData.getEmail()))){
-            throw new RecordAlreadyExistsException("Email already exists, please use another");
-        }
         User updated = userById.get();
         updated.updateUser(newUserData);
-        userRepository.updateUser(updated.getName(), updated.getLastname(), updated.getDni(), updated.getPassword(),
+        userRepository.updateUser(updated.getName(), updated.getLastname(), updated.getPassword(),
                 updated.getCity().getId(), updated.getUserType().toString(), updated.getUserStatus().toString(),
                 updated.getEmail());
         return updated;
     }
 
-    public MostCalledProjection getMostCalledFromUser(Integer userId) throws InvalidRequestException {
-        return userRepository.getMostCalledFromUser(userId).orElseThrow(() -> new InvalidRequestException("No user found with provided id" +
-                "or it doesn't make any call yet"));
+    public List<MostCalledProjection> getMostCalledFromUser(Integer userId, Integer size) throws InvalidRequestException {
+        List<MostCalledProjection> mostCalledFromUser = userRepository.getMostCalledFromUser(userId, size);
+        if (!isNull(mostCalledFromUser))
+            return mostCalledFromUser;
+        throw new InvalidRequestException("No user found with provided id");
     }
 }
