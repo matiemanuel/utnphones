@@ -2,7 +2,7 @@ package edu.utn.utnphones.service;
 
 import edu.utn.utnphones.exceptions.RecordNotExistsException;
 import edu.utn.utnphones.model.Invoice;
-import edu.utn.utnphones.projections.InvoiceByDates;
+import edu.utn.utnphones.projections.InvoiceByUser;
 import edu.utn.utnphones.repository.InvoiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,11 +31,11 @@ public class InvoiceService {
         return invoiceRepository.findById(id).orElseThrow(() -> new RecordNotExistsException("Invoice id provided doesn't exist"));
     }
 
-    public List<Invoice> getInvoicesByUser(Integer idUser) {
-        return invoiceRepository.findByUserId(idUser);
+    public List<InvoiceByUser> getInvoicesByUser(Integer idUser) {
+        return invoiceRepository.getInvoicesByUser(idUser);
     }
 
-    public List<InvoiceByDates> getInvoicesByDates(Integer idUser, Date from, Date to) {
+    public List<InvoiceByUser> getInvoicesByDates(Integer idUser, Date from, Date to) {
         return invoiceRepository.getInvoicesByDates(idUser, from, to);
     }
 }

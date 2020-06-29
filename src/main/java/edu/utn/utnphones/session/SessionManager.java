@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static edu.utn.utnphones.model.User.Type.employee;
+import static edu.utn.utnphones.model.User.Type.infrastructure;
 
 @Component
 public class SessionManager {
@@ -23,10 +24,15 @@ public class SessionManager {
 
         if (user.getUserType() == employee) {
             token = "backoffice";
-            System.out.println("Logueado como empleado");
-        } else {
+            System.out.println("Logged as Employee");
+        }
+        else if(user.getUserType() == infrastructure){
+            token = "infrastructure";
+            System.out.println("Logged as Infrastructure client");
+        }
+        else {
             token = UUID.randomUUID().toString();
-            System.out.println("Logueado como cliente ");
+            System.out.println("Logged as Client");
         }
         sessionMap.put(token, new Session(token, user, new Date(System.currentTimeMillis())));
         return token;

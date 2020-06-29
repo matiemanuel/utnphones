@@ -11,14 +11,14 @@ SET SQL_SAFE_UPDATES = 0;
 -- TABLE GENERATOR --
 CREATE TABLE IF NOT EXISTS `provinces` (
   `id_province` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(20) NULL,
+  `name` VARCHAR(20) UNIQUE NULL,
   PRIMARY KEY (`id_province`))
 ENGINE = InnoDB;
 
 CREATE TABLE IF NOT EXISTS `cities` (
  `id_city` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(45),
-  `prefix` VARCHAR(5),
+  `name` VARCHAR(45) UNIQUE,
+  `prefix` VARCHAR(5) UNIQUE,
   `id_province` INT,
   PRIMARY KEY (`id_city`),
   CONSTRAINT `fk_id_province`
@@ -51,11 +51,11 @@ CREATE TABLE IF NOT EXISTS `users` (
   `id_user` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NULL,
   `lastname` VARCHAR(45) NULL,
-  `dni` VARCHAR(45) NULL,
+  `dni` VARCHAR(45) UNIQUE NOT NULL,
   `email` VARCHAR(45) NULL,
   `password` VARCHAR(45) NULL,
   `id_city` INT NULL,
-  `type` ENUM('client', 'employee') NOT NULL,
+  `type` ENUM('client', 'employee', 'infrastructure') NOT NULL,
   `status` ENUM('active', 'disabled') NOT NULL default 'active',
   PRIMARY KEY (`id_user`),
   CONSTRAINT `fk_id_city`
@@ -132,8 +132,9 @@ INSERT INTO cities (name, prefix, id_province) VALUES ('Mar del Plata', '223', 1
 INSERT INTO `tariffs` (id_origin_city, id_destiny_city, price, cost) VALUES (1,2,0.3,0.1), (2,1,0.3,0.1), (1,1,0.15,0.05), (2,2,0.2,0.1);
 
 INSERT INTO `users` (name, lastname, dni, email, password, id_city, type) VALUES ('Juan', 'Perez', '12345678', 'juan@gmail.com','psw',1,'client'),
-('Martin', 'Lopez','12345678', 'martin@gmail.com','psw',2,'client'),
-('admin', 'admin','12345678', 'admin@gmail.com','admin',2,'employee'),
+('Martin', 'Lopez','1234', 'martin@gmail.com','psw',2,'client'),
+('admin', 'admin','4567', 'admin@gmail.com','admin',2,'employee'),
+('infrastructure', 'infrastructure','7891', 'infrastructure@gmail.com','infrastructure',1,'infrastructure'),
 ('Osvaldo', 'Larreta', '11990555', 'osvaldo@gmail.com','123',1,'client');
 
 INSERT INTO `phone_lines` (line_number, id_user, id_city, type, status) VALUES ('2234545456', 1, 1, 'mobile','active'),
@@ -172,7 +173,7 @@ CREATE trigger trigger_generate_call before insert on calls for each row
 begin
 	if exists (select * from calls where duration = new.duration
     and origin_number = new.origin_number and destiny_number = new.destiny_number
-    and total_price = new.total_price)
+    and total_price = new.total_price and MINUTE(call_date) = MINUTE(new.call_date))
     then
 	signal sqlstate '45000'
 	set message_text = 'Call already created';
@@ -345,6 +346,25 @@ select
 		inner join cities ct on pl.id_city = ct.id_city
 		inner join cities ct2 on pl2.id_city = ct2.id_city
 	where pl.id_user = id_user and call_date between date_from and date_to;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `sp_invoicesByUser`( IN `id_user` INT)
+BEGIN
+select
+    	i.id_invoice as "INVOICE ID",
+		i.number_of_calls as "NUMBER OF CALLS",
+		pl.line_number as "LINE NUMBER",
+        pl.type as "LINE TYPE",
+        i.total_price as "TOTAL PRICE",
+        i.paid as "PAID",
+		i.invoice_date as "DATE",
+        i.expiration_date as "EXPIRATION DATE"
+
+	from invoices i
+		inner join phone_lines pl on i.id_phone_line = pl.id_phone_line
+	where pl.id_user = id_user;
 END$$
 DELIMITER ;
 

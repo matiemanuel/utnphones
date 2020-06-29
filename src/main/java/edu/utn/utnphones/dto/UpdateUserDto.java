@@ -1,12 +1,9 @@
 package edu.utn.utnphones.dto;
 
-import com.sun.istack.NotNull;
 import edu.utn.utnphones.model.City;
 import edu.utn.utnphones.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import javax.persistence.*;
 
 @Data
 @AllArgsConstructor

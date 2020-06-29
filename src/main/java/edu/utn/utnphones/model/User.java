@@ -58,7 +58,7 @@ public class User {
     private Status userStatus;
 
     public enum Type {
-        client, employee;
+        client, employee, infrastructure;
     }
 
     public enum Status {

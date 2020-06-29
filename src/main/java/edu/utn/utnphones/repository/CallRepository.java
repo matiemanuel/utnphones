@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +20,7 @@ public interface CallRepository extends JpaRepository<Call, Integer> {
     public Optional<Call> findById(Integer id);
 
     @Query(value = "call sp_add_call(?1, ?2, ?3)", nativeQuery = true)
-    public Integer addCall(String origin_number, String destiny_number, Integer duration) throws SQLException;
+    public Integer addCall(String origin_number, String destiny_number, Integer duration);
 
     @Query(value = "call sp_callsByUserAndDates(?1, ?2, ?3)", nativeQuery = true)
     List<CallsByDates> getCallsByDates(@Param("id_user") Integer idUser, @Param("from") Date from,

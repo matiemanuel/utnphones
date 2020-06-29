@@ -5,8 +5,12 @@ import edu.utn.utnphones.dto.UpdateUserDto;
 import edu.utn.utnphones.exceptions.InvalidRequestException;
 import edu.utn.utnphones.exceptions.RecordAlreadyExistsException;
 import edu.utn.utnphones.exceptions.RecordNotExistsException;
+import edu.utn.utnphones.model.Call;
 import edu.utn.utnphones.model.PhoneLine;
+import edu.utn.utnphones.model.Tariff;
 import edu.utn.utnphones.model.User;
+import edu.utn.utnphones.projections.CallsByDates;
+import edu.utn.utnphones.projections.InvoiceByUser;
 import edu.utn.utnphones.service.*;
 import edu.utn.utnphones.session.SessionManager;
 import edu.utn.utnphones.utils.RestUtils;
@@ -16,10 +20,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static edu.utn.utnphones.model.User.Status.active;
+import static java.util.Objects.isNull;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -49,8 +57,9 @@ public class BackOfficeWebController {
 
     @ResponseStatus(OK)
     @PostMapping("/user")
-    public ResponseEntity<URI> newUser(@RequestHeader("Authorization") String sessionToken, @RequestBody User user) throws InvalidRequestException, RecordAlreadyExistsException {
-        return (ResponseEntity<URI>) ResponseEntity.status(CREATED).body(RestUtils.getLocation(userService.addUser(user)));
+    public ResponseEntity<URI> newUser(@RequestHeader("Authorization") String sessionToken, @RequestBody User user)
+            throws InvalidRequestException, RecordAlreadyExistsException {
+        return ResponseEntity.created(RestUtils.getLocation(userService.addUser(user))).build();
     }
 
     @ResponseStatus(OK)
@@ -87,14 +96,16 @@ public class BackOfficeWebController {
     //PHONELINES
 
     @GetMapping("/phoneline")
-    public ResponseEntity<List<PhoneLine>> getPhoneline() {
-        List<PhoneLine> phonelines = phoneLineService.getAll(null);
-        return (phonelines.size()>0) ? ResponseEntity.ok(phonelines) : ResponseEntity.noContent().build();
+    public ResponseEntity getPhonelineByNumber(@RequestParam("lineNumber") String lineNumber) {
+        List<PhoneLine> phonelines = phoneLineService.getAll(lineNumber);
+        if(isNull(lineNumber))
+            return (phonelines.size() > 0) ? ResponseEntity.ok(phonelines) : ResponseEntity.noContent().build();
+        return (phonelines.size() > 0) ? ResponseEntity.ok(phonelines.get(0)) : ResponseEntity.notFound().build();
     }
 
     @PostMapping("/phoneline")
     public ResponseEntity<URI> addPhoneline(@RequestHeader("Authorization") String sessionToken, @RequestBody PhoneLine phoneline) throws RecordAlreadyExistsException {
-        return ResponseEntity.status(CREATED).body(RestUtils.getLocation(phoneLineService.addPhoneLine(phoneline)));
+        return ResponseEntity.created(RestUtils.getLocation(phoneLineService.addPhoneLine(phoneline))).build();
     }
 
     @PutMapping("/phoneline")
@@ -108,4 +119,83 @@ public class BackOfficeWebController {
         phoneLineService.updateStatus(PhoneLine.Status.disabled.toString(), idPhoneLine);
         return ResponseEntity.ok().build();
     }
+
+    //TARIFFS
+
+    @GetMapping("/tariffs")
+    public ResponseEntity<List<Tariff>> getTariffs() {
+        List<Tariff> tariffs = tariffService.getAll();
+        return (tariffs.size() > 0) ? ResponseEntity.ok(tariffs) : ResponseEntity.noContent().build();
+    }
+
+    //CALLS
+    @GetMapping("/calls")
+    public ResponseEntity<List<Call>> getCallsByUser(@RequestHeader("Authorization") String sessionToken,
+                                                     @RequestParam("userId") Integer userId) throws InvalidRequestException {
+        List<Call> calls = new ArrayList<>();
+        User currentUser = sessionManager.getCurrentUser(sessionToken);
+        if(isNull(userId))
+            throw new InvalidRequestException("Please provide id user (userId)");
+        calls = callService.getCallsByUser(userId);
+        return (calls.size() > 0) ? ResponseEntity.ok(calls) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/callsByDates")
+    public ResponseEntity<List<CallsByDates>> getCallsByDates(@RequestHeader("Authorization") String sessionToken,
+                                                                  @RequestParam("userId") Integer userId,
+                                                                  @RequestParam("from") String from,
+                                                                  @RequestParam("to") String to) throws InvalidRequestException {
+        List<CallsByDates> calls = new ArrayList<>();
+        User currentUser = sessionManager.getCurrentUser(sessionToken);
+        try {
+            if(isNull(userId))
+                throw new InvalidRequestException("Please provide id user (userId)");
+            if(!isNull(from) && !isNull(to)){
+                Date fromDate = new SimpleDateFormat("dd/MM/yyyy").parse(from);
+                Date toDate = new SimpleDateFormat("dd/MM/yyyy").parse(to);
+                calls = callService.getCallsByDates(userId, fromDate, toDate);
+            }else
+                throw new InvalidRequestException("Please provide service with dates 'from' and 'to'");
+            return (calls.size() > 0) ? ResponseEntity.ok(calls) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (ParseException ex) {
+            throw new InvalidRequestException("Something went wrong when parsing dates, please provide dates with format: dd/MM/yyyy");
+        }
+    }
+
+    //INVOICES
+
+    @GetMapping("/invoices")
+    public ResponseEntity<List<InvoiceByUser>> getInvoicesByUser(@RequestHeader("Authorization") String sessionToken,
+                                                                  @RequestParam("userId") Integer userId) throws InvalidRequestException {
+        List<InvoiceByUser> invoices = new ArrayList<>();
+        User currentUser = sessionManager.getCurrentUser(sessionToken);
+        if(isNull(userId))
+            throw new InvalidRequestException("Please provide id user (userId)");
+        invoices = invoiceService.getInvoicesByUser(userId);
+        return (invoices.size() > 0) ? ResponseEntity.ok(invoices) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/invoicesByDates")
+    public ResponseEntity<List<InvoiceByUser>> getInvoicesByDates(@RequestHeader("Authorization") String sessionToken,
+                                                                  @RequestParam("userId") Integer userId,
+                                                                  @RequestParam("from") String from,
+                                                                  @RequestParam("to") String to) throws InvalidRequestException {
+        List<InvoiceByUser> invoices = new ArrayList<>();
+        User currentUser = sessionManager.getCurrentUser(sessionToken);
+        try {
+            if(isNull(userId))
+                throw new InvalidRequestException("Please provide id user (userId)");
+            if(!isNull(from) && !isNull(to)){
+                Date fromDate = new SimpleDateFormat("dd/MM/yyyy").parse(from);
+                Date toDate = new SimpleDateFormat("dd/MM/yyyy").parse(to);
+                invoices = invoiceService.getInvoicesByDates(userId, fromDate, toDate);
+            }else
+                throw new InvalidRequestException("Please provide service with dates 'from' and 'to'");
+            return (invoices.size() > 0) ? ResponseEntity.ok(invoices) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (ParseException ex) {
+            throw new InvalidRequestException("Something went wrong when parsing dates, please provide dates with format: dd/MM/yyyy");
+        }
+    }
+
+
 }

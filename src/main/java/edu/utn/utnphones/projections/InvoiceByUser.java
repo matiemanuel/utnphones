@@ -2,7 +2,7 @@ package edu.utn.utnphones.projections;
 
 import edu.utn.utnphones.model.PhoneLine.Type;
 
-public interface InvoiceByDates {
+public interface InvoiceByUser {
 
     public String getInvoiceId();
     public Integer getNumberOfCalls();

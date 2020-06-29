@@ -8,7 +8,6 @@ import edu.utn.utnphones.repository.CallRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -26,15 +25,11 @@ public class CallService {
 
 
     public Call addCall(String origin_number, String destiny_number, Integer duration) throws InvalidRequestException, RecordNotExistsException {
-        try {
-            Integer id = callRepository.addCall(origin_number, destiny_number, duration);
-            if (id == null) {
-                throw new InvalidRequestException("Call can not be created");
-            }
-            return this.findById(id);
-        } catch (SQLException e) {
-            throw new InvalidRequestException(e.getMessage());
+        Integer id = callRepository.addCall(origin_number, destiny_number, duration);
+        if (id == null) {
+            throw new InvalidRequestException("Call can not be created");
         }
+        return this.findById(id);
     }
 
     public List<Call> getAll(String origin_number) {

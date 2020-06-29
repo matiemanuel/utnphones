@@ -5,6 +5,8 @@ import edu.utn.utnphones.exceptions.InvalidRequestException;
 import edu.utn.utnphones.exceptions.RecordAlreadyExistsException;
 import edu.utn.utnphones.exceptions.RecordNotExistsException;
 import edu.utn.utnphones.exceptions.ValidationException;
+import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.exception.GenericJDBCException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -37,4 +39,17 @@ public class AdviceController extends ResponseEntityExceptionHandler {
     public ErrorResponseDto handleInvalidRequestException(InvalidRequestException exc) {
         return new ErrorResponseDto(4, exc.getMessage());
     }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(GenericJDBCException.class)
+    public ErrorResponseDto handleSQLException(GenericJDBCException exc) {
+        return new ErrorResponseDto(5, "SQL conflict: " + exc.getSQLException().getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ErrorResponseDto handleConstraintViolationException(ConstraintViolationException exc) {
+        return new ErrorResponseDto(6, "SQL constraint conflict: " + exc.getConstraintName() + "it's already used");
+    }
+
 }

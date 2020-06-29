@@ -29,6 +29,4 @@ public class TariffService {
     public Tariff findById(Integer id) throws RecordNotExistsException {
         return tariffRepository.findById(id).orElseThrow(() -> new RecordNotExistsException("Tariff id provided doesn't exist"));
     }
-
-
 }

@@ -4,9 +4,10 @@ import edu.utn.utnphones.dto.UpdateUserDto;
 import edu.utn.utnphones.exceptions.InvalidRequestException;
 import edu.utn.utnphones.exceptions.RecordAlreadyExistsException;
 import edu.utn.utnphones.exceptions.RecordNotExistsException;
+import edu.utn.utnphones.model.Call;
 import edu.utn.utnphones.model.User;
 import edu.utn.utnphones.projections.CallsByDates;
-import edu.utn.utnphones.projections.InvoiceByDates;
+import edu.utn.utnphones.projections.InvoiceByUser;
 import edu.utn.utnphones.projections.MostCalledProjection;
 import edu.utn.utnphones.service.CallService;
 import edu.utn.utnphones.service.InvoiceService;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static java.util.Objects.isNull;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
@@ -52,28 +54,58 @@ public class UserWebController {
     }
 
     @GetMapping("/calls")
-    public ResponseEntity<List<CallsByDates>> getCallsByDates(@RequestHeader("Authorization") String sessionToken, @RequestParam String from,
-                                                              @RequestParam String to) throws ParseException {
+    public ResponseEntity<List<Call>> getCallsByUser(@RequestHeader("Authorization") String sessionToken,
+                                                     @RequestParam("userId") Integer userId) throws InvalidRequestException {
+        List<Call> calls = new ArrayList<>();
+        User currentUser = sessionManager.getCurrentUser(sessionToken);
+        calls = callService.getCallsByUser(sessionManager.getCurrentUser(sessionToken).getId());
+        return (calls.size() > 0) ? ResponseEntity.ok(calls) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/callsByDates")
+    public ResponseEntity<List<CallsByDates>> getCallsByDates(@RequestHeader("Authorization") String sessionToken,
+                                                              @RequestParam("userId") Integer userId,
+                                                              @RequestParam("from") String from,
+                                                              @RequestParam("to") String to) throws InvalidRequestException {
         List<CallsByDates> calls = new ArrayList<>();
         User currentUser = sessionManager.getCurrentUser(sessionToken);
-        if ((from != null) && (to != null)) {
-            Date fromDate = new SimpleDateFormat("dd/MM/yyyy").parse(from);
-            Date toDate = new SimpleDateFormat("dd/MM/yyyy").parse(to);
-            calls = callService.getCallsByDates(currentUser.getId(), fromDate, toDate);
+        try {
+            if(!isNull(from) && !isNull(to)){
+                Date fromDate = new SimpleDateFormat("dd/MM/yyyy").parse(from);
+                Date toDate = new SimpleDateFormat("dd/MM/yyyy").parse(to);
+                calls = callService.getCallsByDates(sessionManager.getCurrentUser(sessionToken).getId(), fromDate, toDate);
+            }else
+                throw new InvalidRequestException("Please provide service with dates 'from' and 'to'");
+            return (calls.size() > 0) ? ResponseEntity.ok(calls) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (ParseException ex) {
+            throw new InvalidRequestException("Something went wrong when parsing dates, please provide dates with format: dd/MM/yyyy");
         }
-        return (calls.size() > 0) ? ResponseEntity.ok(calls) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-
     }
 
     @GetMapping("/invoices")
-    public ResponseEntity<List<InvoiceByDates>> getInvoicesByDates(@RequestHeader("Authorization") String sessionToken, @RequestParam String from,
-                                                                   @RequestParam String to) throws ParseException {
-        List<InvoiceByDates> invoices = new ArrayList<>();
+    public ResponseEntity<List<InvoiceByUser>> getInvoices(@RequestHeader("Authorization") String sessionToken) {
+        List<InvoiceByUser> invoices = new ArrayList<>();
         User currentUser = sessionManager.getCurrentUser(sessionToken);
-        if ((from != null) && (to != null)) {
-            Date fromDate = new SimpleDateFormat("dd/MM/yyyy").parse(from);
-            Date toDate = new SimpleDateFormat("dd/MM/yyyy").parse(to);
-            invoices = invoiceService.getInvoicesByDates(currentUser.getId(), fromDate, toDate);
+        invoices = invoiceService.getInvoicesByUser(currentUser.getId());
+        return (invoices.size() > 0) ? ResponseEntity.ok(invoices) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/invoicesByDates")
+    public ResponseEntity<List<InvoiceByUser>> getInvoicesByDates(@RequestHeader("Authorization") String sessionToken,
+                                                                  @RequestParam("from") String from,
+                                                                  @RequestParam("to") String to) throws InvalidRequestException {
+        List<InvoiceByUser> invoices = new ArrayList<>();
+        User currentUser = sessionManager.getCurrentUser(sessionToken);
+        try {
+            if ((from != null) && (to != null)) {
+                Date fromDate = new SimpleDateFormat("dd/MM/yyyy").parse(from);
+                Date toDate = new SimpleDateFormat("dd/MM/yyyy").parse(to);
+                invoices = invoiceService.getInvoicesByDates(currentUser.getId(), fromDate, toDate);
+            } else {
+                throw new InvalidRequestException("Please provide service with dates 'from' and 'to'");
+            }
+        } catch (ParseException ex) {
+            throw new InvalidRequestException("Something went wrong when parsing dates, please provide dates with format: dd/MM/yyyy");
         }
         return (invoices.size() > 0) ? ResponseEntity.ok(invoices) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -81,10 +113,10 @@ public class UserWebController {
     @GetMapping("/mostCalled")
     public ResponseEntity<MostCalledProjection> getMostCalledFromUser(@RequestHeader("Authorization") String authorization) throws InvalidRequestException {
         MostCalledProjection mostCalledFromUser = userService.getMostCalledFromUser(sessionManager.getCurrentUser(authorization).getId());
-        if(mostCalledFromUser == null){
+        if (mostCalledFromUser == null) {
             return ResponseEntity.notFound().build();
         }
-        if(mostCalledFromUser.getMostCalled() == null){
+        if (mostCalledFromUser.getMostCalled() == null) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(mostCalledFromUser);

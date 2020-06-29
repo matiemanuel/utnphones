@@ -1,5 +1,6 @@
 package edu.utn.utnphones.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ public class Call {
 
     @ManyToOne
     @JoinColumn(name = "id_invoice")
+    @JsonBackReference
     private Invoice invoice;
 
     @Column(name = "duration")

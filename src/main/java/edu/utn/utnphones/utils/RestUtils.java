@@ -13,17 +13,16 @@ public class RestUtils {
 
         return ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("?idPhoneLine={idPhoneCall}")
+                .query("id_call={idCall}")
                 .buildAndExpand(call.getId())
                 .toUri();
     }
-    //todo change path
 
     public static URI getLocation(PhoneLine phoneLine) {
 
         return ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("?idPhoneLine={idPhoneLine}")
+                .query("id_phone_line={idPhoneLine}")
                 .buildAndExpand(phoneLine.getId())
                 .toUri();
     }
