@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 import static java.util.Objects.isNull;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequestMapping("/api")
@@ -37,20 +37,21 @@ public class WebUserController {
     private final InvoiceService invoiceService;
     private final UserService userService;
     private final SessionManager sessionManager;
+    private final RestUtils rest;
 
     @Autowired
-    public WebUserController(CallService callService, InvoiceService invoiceService, UserService userService, SessionManager sessionManager) {
+    public WebUserController(CallService callService, InvoiceService invoiceService, UserService userService, SessionManager sessionManager, RestUtils rest) {
         this.callService = callService;
         this.invoiceService = invoiceService;
         this.userService = userService;
         this.sessionManager = sessionManager;
+        this.rest = rest;
     }
 
-    @ResponseStatus(OK)
     @PostMapping("/user")
     public ResponseEntity<URI> updateUser(@RequestHeader("Authorization") String sessionToken,
                                           @RequestBody UpdateUserDto updatedUser) throws RecordNotExistsException, RecordAlreadyExistsException {
-        return ResponseEntity.status(OK).body(RestUtils.getLocation(userService.updateUser(sessionManager.getCurrentUser(sessionToken).getId(), updatedUser)));
+        return ResponseEntity.status(CREATED).body(rest.getLocation(userService.updateUser(sessionManager.getCurrentUser(sessionToken).getId(), updatedUser)));
     }
 
     @GetMapping("/calls")

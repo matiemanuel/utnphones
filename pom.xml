@@ -24,16 +24,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
         </dependency>
-
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -89,23 +84,17 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.2</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/model/**</exclude>
-                        <exclude>**/dto/**</exclude>
-                        <exclude>**/projections/**</exclude>
-                        <exclude>**/session/**</exclude>
-                        <exclude>**/repository/**</exclude>
-                        <exclude>**/config/**</exclude>
-                        <exclude>**/exceptions/**</exclude>
-                        <exclude>**/service/**</exclude>
-                        <exclude>**/web/AdviceController.*</exclude>
-                        <exclude>**/utnphones/UtnphonesApplication.*</exclude>
-                    </excludes>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -128,12 +117,22 @@
                         <configuration>
                             <rules>
                                 <rule>
-                                    <element>PACKAGE</element>
+                                    <element>BUNDLE</element>
                                     <limits>
                                         <limit>
-                                            <counter>LINE</counter>
+                                            <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.7</minimum>
+                                            <minimum>0.08</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>BRANCH</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.08</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
@@ -145,26 +144,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>testCompile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

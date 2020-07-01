@@ -4,9 +4,11 @@ import edu.utn.utnphones.model.City;
 import edu.utn.utnphones.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class UpdateUserDto {
 
     private String name;

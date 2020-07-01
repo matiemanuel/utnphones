@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +28,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "Select * from users where email = ?1", nativeQuery = true)
     public User findByEmail(String Email);
 
+    @Transactional
+    @Modifying
     @Query(value = "UPDATE users " +
             "SET name = ?1, lastname = ?2, password = ?3, id_city = ?4, type = ?5, status = ?6 " +
             "WHERE email = ?7", nativeQuery = true)

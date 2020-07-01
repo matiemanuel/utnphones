@@ -9,7 +9,7 @@ import java.net.URI;
 
 public class RestUtils {
 
-    public static URI getLocation(Call call) {
+    public URI getLocation(Call call) {
 
         return ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -18,7 +18,7 @@ public class RestUtils {
                 .toUri();
     }
 
-    public static URI getLocation(PhoneLine phoneLine) {
+    public URI getLocation(PhoneLine phoneLine) {
 
         return ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -28,7 +28,7 @@ public class RestUtils {
     }
     //todo change path
 
-    public static URI getLocation(User user) {
+    public URI getLocation(User user) {
 
         return ServletUriComponentsBuilder
                 .fromCurrentRequest()

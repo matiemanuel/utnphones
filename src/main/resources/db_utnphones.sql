@@ -200,8 +200,13 @@ begin
     and id_city = new.id_city )
     then
 	signal sqlstate '45000'
-	set message_text = 'Phone line already exists';
-	end if;
+	set message_text = 'Error, esta linea ya fue generada';
+    end if;
+    if (LENGTH(new.line_number) != 10 )
+    then
+	signal sqlstate '45000'
+	set message_text = 'Error, el número de la linea no cumple los requisitos ';
+    end if;
 end$$
 
 -- STORED PROCEDURES --
@@ -270,38 +275,30 @@ DELIMITER $$
 CREATE PROCEDURE `sp_add_call`(p_origin_phone VARCHAR(20),
 	p_destiny_phone VARCHAR(20), p_duration int)-- working
 BEGIN
-
 DECLARE origin_city_id int;
 DECLARE destiny_city_id int;
-DECLARE origin_prefix int;
-DECLARE destiny_prefix int;
 DECLARE tariff_price double;
 DECLARE tariff_cost double;
 DECLARE total_price double;
 DECLARE date_call datetime;
-
-
 set origin_city_id= fn_id_city_from_prefix(p_origin_phone);
 set destiny_city_id= fn_id_city_from_prefix(p_destiny_phone);
-
-
 select price into tariff_price from tariffs where id_origin_city= origin_city_id and id_destiny_city= destiny_city_id;
 select cost into tariff_cost from tariffs where id_origin_city= origin_city_id and id_destiny_city= destiny_city_id;
 set total_price =  (p_duration * tariff_price);
 set date_call = (select now());
-
-if(total_price IS NOT NULL)then
-
-	insert into calls (duration, id_invoice, origin_number, destiny_number, tariff_price, tariff_cost, total_price, call_date)
+	if (origin_city_id IS NULL or destiny_city_id IS NULL)
+		then signal sqlstate '01000' set MESSAGE_TEXT = 'Numero/s de telefono/s incompatible/s', MYSQL_ERRNO =  1000;
+    elseif (LENGTH(p_destiny_phone) != 10 )
+		then signal sqlstate '01000' set MESSAGE_TEXT = 'El número de destino no cumple los requisitos', MYSQL_ERRNO =  1000;
+	elseif( (select line_number from phone_lines where line_number = p_origin_phone) IS NULL )
+		then signal sqlstate '01000' set MESSAGE_TEXT = 'El número de origen no pertenece a ninguna linea telefónica', MYSQL_ERRNO =  1000;
+    else
+    insert into calls (duration, id_invoice, origin_number, destiny_number, tariff_price, tariff_cost, total_price, call_date)
 	values(p_duration, null, p_origin_phone, p_destiny_phone,tariff_price,
 	tariff_cost, ROUND(total_price,2), date_call);
 	select LAST_INSERT_ID() as 'id_call';
-
-else
-	if (origin_prefix IS NULL or destiny_prefix IS NULL)
-		then signal sqlstate '01000' set MESSAGE_TEXT = 'Numero/s de telefono/s incompatible/s', MYSQL_ERRNO =  1000;
-    end if;
-end if;
+	end if;
 END $$
 
 DELIMITER $$
@@ -322,7 +319,7 @@ select
 		inner join phone_lines pl2 on c.destiny_number = pl2.line_number
 		inner join cities ct on pl.id_city = ct.id_city
 		inner join cities ct2 on pl2.id_city = ct2.id_city
-	where pl.id_user = id_user and call_date between date_from and date_to + 1;
+	where pl.id_user = id_user and call_date between date_from and date_to + interval 1 day;
 END$$
 DELIMITER ;
 
@@ -360,7 +357,7 @@ select
 
 	from invoices i
 		inner join phone_lines pl on i.id_phone_line = pl.id_phone_line
-	where pl.id_user = id_user and invoice_date between date_from and date_to + 1;
+	where pl.id_user = id_user and invoice_date between date_from and date_to +  interval 1 day;
 END$$
 DELIMITER ;
 
@@ -388,7 +385,7 @@ DELIMITER ;
 DROP EVENT IF EXISTS `e_check_calls`;
 DELIMITER $$
 CREATE EVENT `e_check_calls`
-  ON SCHEDULE EVERY 1 MONTH STARTS now()
+  ON SCHEDULE EVERY 1 MINUTE STARTS '2020-06-24 16:26:01'
   ON COMPLETION PRESERVE
 DO BEGIN
   call sp_verify_calls_and_generate_invoices();
@@ -396,6 +393,11 @@ END$$
 DELIMITER ;
 
 -- USERS --
+/*repair table mysql.db use_frm;*/
+DROP USER if exists 'utnphones_admin'@'localhost';
+DROP USER if exists 'backoffice'@'localhost';
+DROP USER if exists 'clients'@'localhost';
+DROP USER if exists 'infrastructure'@'localhost';
 
 CREATE USER 'utnphones_admin'@'localhost' IDENTIFIED BY 'admin'; -- El unico en la parte de prog, * privileges
 CREATE USER 'backoffice'@'localhost' IDENTIFIED BY 'psw';
@@ -410,19 +412,21 @@ GRANT ALL ON utnphones.users TO 'backoffice'@'localhost';
 GRANT ALL ON utnphones.tariffs TO 'backoffice'@'localhost';
 GRANT ALL ON utnphones.phone_lines TO 'backoffice'@'localhost';
 GRANT TRIGGER ON utnphones.* TO 'backoffice'@'localhost';
-GRANT EXECUTE ON PROCEDURE utn_phones.sp_callsByUserAndDates TO 'backoffice'@'localhost';
-GRANT EXECUTE ON PROCEDURE utn_phones.sp_invoicesByUserAndDates TO 'backoffice'@'localhost';
+GRANT EXECUTE ON PROCEDURE sp_callsByUserAndDates TO 'backoffice'@'localhost';
+GRANT EXECUTE ON PROCEDURE sp_invoicesByUserAndDates TO 'backoffice'@'localhost';
 
 GRANT SELECT ON utnphones.calls TO 'clients'@'localhost';
 GRANT SELECT ON utnphones.invoices TO 'clients'@'localhost';
-GRANT EXECUTE ON PROCEDURE utn_phones.sp_callsByUserAndDates TO 'clients'@'localhost';
-GRANT EXECUTE ON PROCEDURE utn_phones.sp_invoicesByUserAndDates TO 'clients'@'localhost';
+GRANT EXECUTE ON PROCEDURE sp_callsByUserAndDates TO 'clients'@'localhost';
+GRANT EXECUTE ON PROCEDURE sp_invoicesByUserAndDates TO 'clients'@'localhost';
 
 GRANT INSERT ON utnphones.calls TO 'infrastructure'@'localhost';
 GRANT TRIGGER ON utnphones.* TO 'infrastructure'@'localhost';
-GRANT EXECUTE ON PROCEDURE utn_phones.sp_add_call TO 'infrastructure'@'localhost';
-GRANT EXECUTE ON FUNCTION utn_phones.fn_id_city_from_prefix TO 'infrastructure'@'localhost';
+GRANT EXECUTE ON PROCEDURE sp_add_call TO 'infrastructure'@'localhost';
+GRANT EXECUTE ON FUNCTION fn_id_city_from_prefix TO 'infrastructure'@'localhost';
 
 -- INDICES --
 CREATE INDEX index_calls_dates_user ON calls(origin_number, call_date) using btree;
 CREATE INDEX index_invoices_dates_user ON invoices(id_phone_line, invoice_date) using btree;
+
+/*FLUSH PRIVILEGES;*/

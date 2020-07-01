@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>User.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">utnphones</a> &gt; <a href="index.source.html" class="el_package">edu.utn.utnphones.model</a> &gt; <span class="el_source">User.java</span></div><h1>User.java</h1><pre class="source lang-java linenums">package edu.utn.utnphones.model;
+
+
+import com.sun.istack.NotNull;
+import edu.utn.utnphones.dto.UpdateUserDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+
+import static java.util.Objects.isNull;
+
+<span class="pc bnc" id="L14" title="All 78 branches missed.">@Data</span>
+<span class="nc" id="L15">@NoArgsConstructor</span>
+<span class="fc" id="L16">@AllArgsConstructor</span>
+@Entity(name = &quot;User&quot;)
+@Table(name = &quot;users&quot;)
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;id_user&quot;)
+<span class="fc" id="L24">    private Integer id;</span>
+
+    @NotNull
+    @Column(name = &quot;name&quot;)
+<span class="nc" id="L28">    private String name;</span>
+
+    @NotNull
+    @Column(name = &quot;lastname&quot;)
+<span class="nc" id="L32">    private String lastname;</span>
+
+    @NotNull
+    @Column(name = &quot;dni&quot;, unique = true)
+<span class="nc" id="L36">    private String dni;</span>
+
+    @NotNull
+    @Column(name = &quot;email&quot;)
+<span class="fc" id="L40">    private String email;</span>
+
+    @NotNull
+    @Column(name = &quot;password&quot;)
+<span class="fc" id="L44">    private String password;</span>
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = &quot;id_city&quot;)
+<span class="nc" id="L48">    private City city;</span>
+
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    @Column(name = &quot;type&quot;)
+<span class="nc" id="L53">    private Type userType;</span>
+
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    @Column(name = &quot;status&quot;)
+<span class="fc" id="L58">    private Status userStatus;</span>
+
+<span class="fc" id="L60">    public enum Type {</span>
+<span class="fc" id="L61">        client, employee, infrastructure;</span>
+    }
+
+<span class="fc" id="L64">    public enum Status {</span>
+<span class="fc" id="L65">        active, disabled;</span>
+    }
+
+    public void updateUser(UpdateUserDto update){
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if(!isNull(update.getName()))</span>
+<span class="nc" id="L70">            this.name = update.getName();</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        if(!isNull(update.getLastname()))</span>
+<span class="nc" id="L72">            this.lastname = update.getLastname();</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if(!isNull(update.getPassword()))</span>
+<span class="nc" id="L74">            this.password = update.getPassword();</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        if(!isNull(update.getCity()))</span>
+<span class="nc" id="L76">            this.city = update.getCity();</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        if(!isNull(update.getUserType()))</span>
+<span class="nc" id="L78">            this.userType = update.getUserType();</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        if(!isNull(update.getUserStatus()))</span>
+<span class="nc" id="L80">            this.userStatus = update.getUserStatus();</span>
+<span class="nc" id="L81">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

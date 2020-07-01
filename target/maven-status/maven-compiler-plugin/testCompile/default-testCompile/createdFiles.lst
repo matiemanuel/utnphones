@@ -1,4 +1,5 @@
-edu\utn\utnphones\controllers\web\LoginControllerTests.class
-edu\utn\utnphones\controllers\web\backofficewebcontroller\BackOfficeUserServiceTests.class
-edu\utn\utnphones\controllers\web\UserWebControllerTests.class
-edu\utn\utnphones\controllers\web\backofficewebcontroller\BackOfficePhoneLineServicesTests.class
+edu\utn\utnphones\controllers\UserControllerTests.class
+edu\utn\utnphones\controllers\BackOfficeControllerTests.class
+edu\utn\utnphones\controllers\UserWebControllerTests.class
+edu\utn\utnphones\controllers\InfrastructureControllerTests.class
+edu\utn\utnphones\controllers\LoginControllerTests.class

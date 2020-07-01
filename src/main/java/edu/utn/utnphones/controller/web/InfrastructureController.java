@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
@@ -20,8 +19,12 @@ public class InfrastructureController {
     @Autowired
     private CallService callService;
 
-    public InfrastructureController(CallService callService) {
+    @Autowired
+    private RestUtils restUtils;
+
+    public InfrastructureController(CallService callService, RestUtils restUtils) {
         this.callService = callService;
+        this.restUtils = restUtils;
     }
 
     @GetMapping("/")
@@ -32,6 +35,6 @@ public class InfrastructureController {
     @PostMapping("/")
     public ResponseEntity<URI> addPhoneCall(@RequestBody NewCallRequestDto newCall) throws InvalidRequestException, RecordNotExistsException {
         Call call = callService.addCall(newCall.getOrigin(), newCall.getDestiny(), newCall.getDuration());
-        return ResponseEntity.created(RestUtils.getLocation(call)).build();
+        return ResponseEntity.created(restUtils.getLocation(call)).build();
     }
 }

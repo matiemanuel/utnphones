@@ -40,16 +40,19 @@ public class BackOfficeWebController {
     private final PhoneLineService phoneLineService;
     private final TariffService tariffService;
     private final InvoiceService invoiceService;
+    private final RestUtils rest;
 
     @Autowired
     public BackOfficeWebController(UserService userService, CallService callService, PhoneLineService phoneLineService,
-                                   TariffService tariffService, InvoiceService invoiceService, SessionManager sessionManager) {
+                                   TariffService tariffService, InvoiceService invoiceService, SessionManager sessionManager,
+                                   RestUtils rest) {
         this.userService = userService;
         this.sessionManager = sessionManager;
         this.callService = callService;
         this.tariffService = tariffService;
         this.phoneLineService = phoneLineService;
         this.invoiceService = invoiceService;
+        this.rest = rest;
     }
 
     //USERS
@@ -58,7 +61,7 @@ public class BackOfficeWebController {
     @PostMapping("/user")
     public ResponseEntity<URI> newUser(@RequestHeader("Authorization") String sessionToken, @RequestBody User user)
             throws InvalidRequestException, RecordAlreadyExistsException {
-        return ResponseEntity.created(RestUtils.getLocation(userService.addUser(user))).build();
+        return ResponseEntity.created(rest.getLocation(userService.addUser(user))).build();
     }
 
     @ResponseStatus(OK)
@@ -89,13 +92,13 @@ public class BackOfficeWebController {
     public ResponseEntity<URI> updateUser(@RequestHeader("Authorization") String sessionToken,
                                           @RequestParam(value = "userId", required = true) Integer userId,
                                           @RequestBody UpdateUserDto updatedUser) throws RecordNotExistsException, RecordAlreadyExistsException {
-        return ResponseEntity.status(OK).body(RestUtils.getLocation(userService.updateUser(userId, updatedUser)));
+        return ResponseEntity.status(OK).body(rest.getLocation(userService.updateUser(userId, updatedUser)));
     } // todo no funciona
 
     //PHONELINES
 
     @GetMapping("/phoneline")
-    public ResponseEntity getPhonelineById(@RequestParam(name = "id_phone_line", required = false) Integer phoneLineId) {
+    public ResponseEntity getPhoneline(@RequestParam(name = "id_phone_line", required = false) Integer phoneLineId) {
         List<PhoneLine> phonelines = phoneLineService.getAll(phoneLineId);
         if (isNull(phoneLineId))
             return (phonelines.size() > 0) ? ResponseEntity.ok(phonelines) : ResponseEntity.noContent().build();
@@ -104,7 +107,7 @@ public class BackOfficeWebController {
 
     @PostMapping("/phoneline")
     public ResponseEntity<URI> addPhoneline(@RequestHeader("Authorization") String sessionToken, @RequestBody PhoneLine phoneline) throws RecordAlreadyExistsException {
-        return ResponseEntity.created(RestUtils.getLocation(phoneLineService.addPhoneLine(phoneline))).build();
+        return ResponseEntity.created(rest.getLocation(phoneLineService.addPhoneLine(phoneline))).build();
     }//todo correcciones
 
     @PutMapping("/phoneline")
@@ -131,8 +134,7 @@ public class BackOfficeWebController {
     @GetMapping("/calls")
     public ResponseEntity<List<Call>> getCallsByUser(@RequestHeader("Authorization") String sessionToken,
                                                      @RequestParam("userId") Integer userId) throws InvalidRequestException {
-        List<Call> calls = new ArrayList<>();
-        User currentUser = sessionManager.getCurrentUser(sessionToken);
+        List<Call> calls;
         if (isNull(userId))
             throw new InvalidRequestException("Please provide id user (userId)");
         calls = callService.getCallsByUser(userId);
@@ -144,8 +146,7 @@ public class BackOfficeWebController {
                                                               @RequestParam("userId") Integer userId,
                                                               @RequestParam("from") String from,
                                                               @RequestParam("to") String to) throws InvalidRequestException {
-        List<CallsByDates> calls = new ArrayList<>();
-        User currentUser = sessionManager.getCurrentUser(sessionToken);
+        List<CallsByDates> calls;
         try {
             if (isNull(userId))
                 throw new InvalidRequestException("Please provide id user (userId)");
@@ -166,8 +167,7 @@ public class BackOfficeWebController {
     @GetMapping("/invoices")
     public ResponseEntity<List<InvoiceByUser>> getInvoicesByUser(@RequestHeader("Authorization") String sessionToken,
                                                                  @RequestParam("userId") Integer userId) throws InvalidRequestException {
-        List<InvoiceByUser> invoices = new ArrayList<>();
-        User currentUser = sessionManager.getCurrentUser(sessionToken);
+        List<InvoiceByUser> invoices;
         if (isNull(userId))
             throw new InvalidRequestException("Please provide id user (userId)");
         invoices = invoiceService.getInvoicesByUser(userId);
@@ -179,8 +179,7 @@ public class BackOfficeWebController {
                                                                   @RequestParam("userId") Integer userId,
                                                                   @RequestParam("from") String from,
                                                                   @RequestParam("to") String to) throws InvalidRequestException {
-        List<InvoiceByUser> invoices = new ArrayList<>();
-        User currentUser = sessionManager.getCurrentUser(sessionToken);
+        List<InvoiceByUser> invoices;
         try {
             if (isNull(userId))
                 throw new InvalidRequestException("Please provide id user (userId)");

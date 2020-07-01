@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WebUserController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">utnphones</a> &gt; <a href="index.source.html" class="el_package">edu.utn.utnphones.controller.web</a> &gt; <span class="el_source">WebUserController.java</span></div><h1>WebUserController.java</h1><pre class="source lang-java linenums">package edu.utn.utnphones.controller.web;
+
+import edu.utn.utnphones.dto.UpdateUserDto;
+import edu.utn.utnphones.exceptions.InvalidRequestException;
+import edu.utn.utnphones.exceptions.RecordAlreadyExistsException;
+import edu.utn.utnphones.exceptions.RecordNotExistsException;
+import edu.utn.utnphones.model.Call;
+import edu.utn.utnphones.model.User;
+import edu.utn.utnphones.projections.CallsByDates;
+import edu.utn.utnphones.projections.InvoiceByUser;
+import edu.utn.utnphones.projections.MostCalledProjection;
+import edu.utn.utnphones.service.CallService;
+import edu.utn.utnphones.service.InvoiceService;
+import edu.utn.utnphones.service.UserService;
+import edu.utn.utnphones.session.SessionManager;
+import edu.utn.utnphones.utils.RestUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import static java.util.Objects.isNull;
+import static org.springframework.http.HttpStatus.CREATED;
+
+@RestController
+@RequestMapping(&quot;/api&quot;)
+public class WebUserController {
+
+    private final CallService callService;
+    private final InvoiceService invoiceService;
+    private final UserService userService;
+    private final SessionManager sessionManager;
+    private final RestUtils rest;
+
+    @Autowired
+<span class="fc" id="L43">    public WebUserController(CallService callService, InvoiceService invoiceService, UserService userService, SessionManager sessionManager, RestUtils rest) {</span>
+<span class="fc" id="L44">        this.callService = callService;</span>
+<span class="fc" id="L45">        this.invoiceService = invoiceService;</span>
+<span class="fc" id="L46">        this.userService = userService;</span>
+<span class="fc" id="L47">        this.sessionManager = sessionManager;</span>
+<span class="fc" id="L48">        this.rest = rest;</span>
+<span class="fc" id="L49">    }</span>
+
+    @PostMapping(&quot;/user&quot;)
+    public ResponseEntity&lt;URI&gt; updateUser(@RequestHeader(&quot;Authorization&quot;) String sessionToken,
+                                          @RequestBody UpdateUserDto updatedUser) throws RecordNotExistsException, RecordAlreadyExistsException {
+<span class="fc" id="L54">        return ResponseEntity.status(CREATED).body(rest.getLocation(userService.updateUser(sessionManager.getCurrentUser(sessionToken).getId(), updatedUser)));</span>
+    }
+
+    @GetMapping(&quot;/calls&quot;)
+    public ResponseEntity&lt;List&lt;Call&gt;&gt; getCallsByUser(@RequestHeader(&quot;Authorization&quot;) String sessionToken) throws InvalidRequestException {
+<span class="fc" id="L59">        List&lt;Call&gt; calls = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L60">        calls = callService.getCallsByUser(sessionManager.getCurrentUser(sessionToken).getId());</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        return (calls.size() &gt; 0) ? ResponseEntity.ok(calls) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();</span>
+    }
+
+    @GetMapping(&quot;/callsByDates&quot;)
+    public ResponseEntity&lt;List&lt;CallsByDates&gt;&gt; getCallsByDates(@RequestHeader(&quot;Authorization&quot;) String sessionToken,
+                                                              @RequestParam(&quot;from&quot;) String from,
+                                                              @RequestParam(&quot;to&quot;) String to) throws InvalidRequestException {
+<span class="fc" id="L68">        List&lt;CallsByDates&gt; calls = new ArrayList&lt;&gt;();</span>
+        try {
+<span class="fc bfc" id="L70" title="All 4 branches covered.">            if(!isNull(from) &amp;&amp; !isNull(to)){</span>
+<span class="fc" id="L71">                Date fromDate = new SimpleDateFormat(&quot;dd/MM/yyyy&quot;).parse(from);</span>
+<span class="fc" id="L72">                Date toDate = new SimpleDateFormat(&quot;dd/MM/yyyy&quot;).parse(to);</span>
+<span class="fc" id="L73">                calls = callService.getCallsByDates(sessionManager.getCurrentUser(sessionToken).getId(), fromDate, toDate);</span>
+<span class="fc" id="L74">            }else</span>
+<span class="fc" id="L75">                throw new InvalidRequestException(&quot;Please provide service with dates 'from' and 'to'&quot;);</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">            return (calls.size() &gt; 0) ? ResponseEntity.ok(calls) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();</span>
+<span class="fc" id="L77">        } catch (ParseException ex) {</span>
+<span class="fc" id="L78">            throw new InvalidRequestException(&quot;Something went wrong when parsing dates, please provide dates with format: dd/MM/yyyy&quot;);</span>
+        }
+    }
+
+    @GetMapping(&quot;/invoices&quot;)
+    public ResponseEntity&lt;List&lt;InvoiceByUser&gt;&gt; getInvoices(@RequestHeader(&quot;Authorization&quot;) String sessionToken) {
+<span class="fc" id="L84">        List&lt;InvoiceByUser&gt; invoices = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L85">        User currentUser = sessionManager.getCurrentUser(sessionToken);</span>
+<span class="fc" id="L86">        invoices = invoiceService.getInvoicesByUser(currentUser.getId());</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        return (invoices.size() &gt; 0) ? ResponseEntity.ok(invoices) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();</span>
+    }
+
+    @GetMapping(&quot;/invoicesByDates&quot;)
+    public ResponseEntity&lt;List&lt;InvoiceByUser&gt;&gt; getInvoicesByDates(@RequestHeader(&quot;Authorization&quot;) String sessionToken,
+                                                                  @RequestParam(&quot;from&quot;) String from,
+                                                                  @RequestParam(&quot;to&quot;) String to) throws InvalidRequestException {
+<span class="fc" id="L94">        List&lt;InvoiceByUser&gt; invoices = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L95">        User currentUser = sessionManager.getCurrentUser(sessionToken);</span>
+        try {
+<span class="fc bfc" id="L97" title="All 4 branches covered.">            if ((from != null) &amp;&amp; (to != null)) {</span>
+<span class="fc" id="L98">                Date fromDate = new SimpleDateFormat(&quot;dd/MM/yyyy&quot;).parse(from);</span>
+<span class="fc" id="L99">                Date toDate = new SimpleDateFormat(&quot;dd/MM/yyyy&quot;).parse(to);</span>
+<span class="fc" id="L100">                invoices = invoiceService.getInvoicesByDates(currentUser.getId(), fromDate, toDate);</span>
+<span class="fc" id="L101">            } else {</span>
+<span class="fc" id="L102">                throw new InvalidRequestException(&quot;Please provide service with dates 'from' and 'to'&quot;);</span>
+            }
+<span class="fc" id="L104">        } catch (ParseException ex) {</span>
+<span class="fc" id="L105">            throw new InvalidRequestException(&quot;Something went wrong when parsing dates, please provide dates with format: dd/MM/yyyy&quot;);</span>
+<span class="fc" id="L106">        }</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        return (invoices.size() &gt; 0) ? ResponseEntity.ok(invoices) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();</span>
+    }
+
+    @GetMapping(&quot;/mostCalled&quot;)
+    public ResponseEntity&lt;List&lt;MostCalledProjection&gt;&gt; getMostCalledFromUser(@RequestHeader(&quot;Authorization&quot;) String authorization,
+                                                                      @RequestParam(name = &quot;size&quot;, required = false) Integer size)
+            throws InvalidRequestException, RecordNotExistsException {
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        if(isNull(size))</span>
+<span class="fc" id="L115">            size = 1;</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        if(size &lt; 1)</span>
+<span class="fc" id="L117">            throw new InvalidRequestException(&quot;Please provide size &gt; 0&quot;);</span>
+<span class="fc" id="L118">        List&lt;MostCalledProjection&gt; mostCalledFromUser = userService.getMostCalledFromUser(sessionManager.getCurrentUser(authorization).getId(), size);</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        return (mostCalledFromUser.size() &gt; 0)? ResponseEntity.ok(mostCalledFromUser) : ResponseEntity.noContent().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>
