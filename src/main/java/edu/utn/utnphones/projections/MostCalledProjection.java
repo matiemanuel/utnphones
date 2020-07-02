@@ -2,8 +2,11 @@ package edu.utn.utnphones.projections;
 
 public interface MostCalledProjection {
 
-    public String getName();
-    public String getLastname();
-    public String getMostCalled();
+    public String getNumberPhone();
+    public String getDestination();
+
+    public void setNumberPhone(String numberPhone);
+    public void setDestination(String destination);
+
 
 }

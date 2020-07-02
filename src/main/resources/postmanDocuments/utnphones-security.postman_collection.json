@@ -1,0 +1,147 @@
+{
+	"info": {
+		"_postman_id": "5346a159-5105-4f60-b5d9-cb22279f8e57",
+		"name": "utnphones-security",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "[security] login - backoffice",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6f4bbf1a-69d2-48e8-9465-9d1aa250bca8",
+						"exec": [
+							"pm.environment.set(\"Authorization\", postman.getResponseHeader(\"Authorization\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\" : \"admin@gmail.com\",\n\t\"password\" : \"admin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/login",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[security] login - infrastructure",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6ba75267-7cbd-4c11-b80a-b82206e07da6",
+						"exec": [
+							"pm.environment.set(\"Authorization\", postman.getResponseHeader(\"Authorization\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\" : \"infrastructure@gmail.com\",\n\t\"password\" : \"infrastructure\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/login",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[security] login - client",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "dd0821a1-9028-4cff-a094-d30616986cf2",
+						"exec": [
+							"pm.environment.set(\"Authorization\", postman.getResponseHeader(\"Authorization\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\" : \"juan@gmail.com\",\n\t\"password\" : \"psw\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/login",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[secutiry] logout",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{Authorization}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/logout",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"logout"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface PhoneLineRepository extends JpaRepository<PhoneLine, Integer> {
 
-    @Query(value = "Select * from users where line_number = ?1", nativeQuery = true)
+    @Query(value = "Select * from phone_lines where line_number = ?1", nativeQuery = true)
     public List<PhoneLine> findbyLineNumber(String linenumber);
 
     public Optional<PhoneLine> findById(Integer id);
@@ -23,8 +23,5 @@ public interface PhoneLineRepository extends JpaRepository<PhoneLine, Integer> {
     @Modifying
     @Query(value = "update phone_lines set status = ?1 where id_phone_line = ?2", nativeQuery = true)
     public void updateStatus(String status, Integer idPhoneLine);
-
-
-
 
 }

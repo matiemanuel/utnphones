@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Configuration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">utnphones</a> &gt; <a href="index.source.html" class="el_package">edu.utn.utnphones.config</a> &gt; <span class="el_source">Configuration.java</span></div><h1>Configuration.java</h1><pre class="source lang-java linenums">package edu.utn.utnphones.config;
+
+import edu.utn.utnphones.session.SessionBackOfficeFilter;
+import edu.utn.utnphones.session.SessionFilter;
+import edu.utn.utnphones.session.SessionInfrastructureFilter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+@org.springframework.context.annotation.Configuration
+@EnableSwagger2
+@EnableScheduling
+<span class="nc" id="L19">public class Configuration {</span>
+
+    @Autowired
+    SessionBackOfficeFilter sessionBackOfficeFilter;
+
+    @Autowired
+    SessionInfrastructureFilter sessionInfrastructureFilter;
+
+    @Autowired
+    SessionFilter sessionUserFilter;
+
+    @Bean
+    public FilterRegistrationBean userFilter() {
+<span class="nc" id="L32">        FilterRegistrationBean registration = new FilterRegistrationBean();</span>
+<span class="nc" id="L33">        registration.setFilter(sessionUserFilter);</span>
+<span class="nc" id="L34">        registration.addUrlPatterns(&quot;/api/*&quot;);</span>
+<span class="nc" id="L35">        return registration;</span>
+    }
+
+    @Bean
+    public FilterRegistrationBean backOfficeFilter() {
+<span class="nc" id="L40">        FilterRegistrationBean registration = new FilterRegistrationBean();</span>
+<span class="nc" id="L41">        registration.setFilter(sessionBackOfficeFilter);</span>
+<span class="nc" id="L42">        registration.addUrlPatterns(&quot;/backoffice/*&quot;);</span>
+<span class="nc" id="L43">        return registration;</span>
+    }
+
+    @Bean
+    public FilterRegistrationBean infrastructureFilter() {
+<span class="nc" id="L48">        FilterRegistrationBean registration = new FilterRegistrationBean();</span>
+<span class="nc" id="L49">        registration.setFilter(sessionInfrastructureFilter);</span>
+<span class="nc" id="L50">        registration.addUrlPatterns(&quot;/infrastructure/*&quot;);</span>
+<span class="nc" id="L51">        return registration;</span>
+    }
+
+    @Bean
+    public Docket api() {
+<span class="nc" id="L56">        return new Docket(DocumentationType.SWAGGER_2)</span>
+<span class="nc" id="L57">                .select()</span>
+<span class="nc" id="L58">                .apis(</span>
+                        RequestHandlerSelectors
+<span class="nc" id="L60">                                .basePackage(&quot;edu.utn.utnphones.controller&quot;))</span>
+<span class="nc" id="L61">                .paths(PathSelectors.any())</span>
+<span class="nc" id="L62">                .build();</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

@@ -2,12 +2,14 @@ package edu.utn.utnphones.model;
 
 
 import com.sun.istack.NotNull;
+import edu.utn.utnphones.dto.UpdateUserDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
+
+import static java.util.Objects.isNull;
 
 @Data
 @NoArgsConstructor
@@ -48,19 +50,33 @@ public class User {
     @Enumerated(EnumType.STRING)
     @NotNull
     @Column(name = "type")
-    private Type user_type;
+    private Type userType;
 
     @Enumerated(EnumType.STRING)
     @NotNull
     @Column(name = "status")
-    private Status user_status;
+    private Status userStatus;
 
     public enum Type {
-        client, employee;
+        client, employee, infrastructure;
     }
 
     public enum Status {
         active, disabled;
     }
 
+    public void updateUser(UpdateUserDto update){
+        if(!isNull(update.getName()))
+            this.name = update.getName();
+        if(!isNull(update.getLastname()))
+            this.lastname = update.getLastname();
+        if(!isNull(update.getPassword()))
+            this.password = update.getPassword();
+        if(!isNull(update.getCity()))
+            this.city = update.getCity();
+        if(!isNull(update.getUserType()))
+            this.userType = update.getUserType();
+        if(!isNull(update.getUserStatus()))
+            this.userStatus = update.getUserStatus();
+    }
 }

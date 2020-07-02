@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LoginController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">utnphones</a> &gt; <a href="index.source.html" class="el_package">edu.utn.utnphones.controller.web</a> &gt; <span class="el_source">LoginController.java</span></div><h1>LoginController.java</h1><pre class="source lang-java linenums">package edu.utn.utnphones.controller.web;
+
+import edu.utn.utnphones.controller.UserController;
+import edu.utn.utnphones.dto.LoginRequestDto;
+import edu.utn.utnphones.exceptions.RecordNotExistsException;
+import edu.utn.utnphones.exceptions.ValidationException;
+import edu.utn.utnphones.model.User;
+import edu.utn.utnphones.session.SessionManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping(&quot;/&quot;)
+public class LoginController {
+
+    UserController userController;
+    SessionManager sessionManager;
+
+    @Autowired
+<span class="fc" id="L22">    public LoginController(UserController userController, SessionManager sessionManager) {</span>
+<span class="fc" id="L23">        this.userController = userController;</span>
+<span class="fc" id="L24">        this.sessionManager = sessionManager;</span>
+<span class="fc" id="L25">    }</span>
+
+    @PostMapping(&quot;login&quot;)
+    public ResponseEntity login(@RequestBody LoginRequestDto loginDto) throws ValidationException, RecordNotExistsException {
+        ResponseEntity response;
+<span class="fc" id="L30">        User u = userController.login(loginDto.getEmail(), loginDto.getPassword());</span>
+<span class="fc" id="L31">        String token = sessionManager.createSession(u);</span>
+<span class="fc" id="L32">        response = ResponseEntity.ok().headers(createHeaders(token)).build();</span>
+<span class="fc" id="L33">        return response;</span>
+    }
+
+    @PostMapping(&quot;logout&quot;)
+    public ResponseEntity logout(@RequestHeader(&quot;Authorization&quot;) String token) {
+<span class="fc" id="L38">        sessionManager.removeSession(token);</span>
+<span class="fc" id="L39">        return ResponseEntity.ok().build();</span>
+    }
+
+    private HttpHeaders createHeaders(String token) {
+<span class="fc" id="L43">        HttpHeaders responseHeaders = new HttpHeaders();</span>
+<span class="fc" id="L44">        responseHeaders.set(&quot;Authorization&quot;, token);</span>
+<span class="fc" id="L45">        return responseHeaders;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

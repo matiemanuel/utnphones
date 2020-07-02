@@ -1,8 +1,11 @@
 package edu.utn.utnphones.service;
 
-import edu.utn.utnphones.projections.MostCalledProjection;
-import edu.utn.utnphones.exceptions.UserNotExistsException;
+import edu.utn.utnphones.dto.UpdateUserDto;
+import edu.utn.utnphones.exceptions.InvalidRequestException;
+import edu.utn.utnphones.exceptions.RecordAlreadyExistsException;
+import edu.utn.utnphones.exceptions.RecordNotExistsException;
 import edu.utn.utnphones.model.User;
+import edu.utn.utnphones.projections.MostCalledProjection;
 import edu.utn.utnphones.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,38 +26,50 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User login(String email, String password) throws UserNotExistsException {
+    public User login(String email, String password) throws RecordNotExistsException {
         User user = userRepository.getByEmailAndPassword(email, password);
-        return Optional.ofNullable(user).orElseThrow(() -> new UserNotExistsException());
+        return Optional.ofNullable(user).orElseThrow(() -> new RecordNotExistsException("Login problems, please check the data provided"));
     }
 
-    public User addUser(User newUser) {
-        return (userRepository.save(newUser));
+    public User addUser(User newUser) throws InvalidRequestException, RecordAlreadyExistsException {
+        if (isNull(newUser))
+            throw new InvalidRequestException("You need to provide the new user info");
+        User saved = userRepository.save(newUser);
+        if (isNull(saved))
+            throw new RecordAlreadyExistsException("Email is already added");
+        return saved;
     }
 
     public List<User> getAll() {
         return userRepository.findAll();
     }
 
-    public User findById(Integer id) throws UserNotExistsException {
-        return userRepository.findById(id).orElseThrow(UserNotExistsException::new);
+    public User findById(Integer id) throws RecordNotExistsException {
+        return userRepository.findById(id).orElseThrow(() -> new RecordNotExistsException("No user found with provided Id"));
     }
 
-    public User disableUser(Integer userId) throws UserNotExistsException {
+    public User disableUser(Integer userId) throws RecordNotExistsException {
         User user = findById(userId);
-        user.setUser_status(disabled);
+        user.setUserStatus(disabled);
         return userRepository.save(user);
     }
 
-  /*  public User updateUser(User user) throws UserNotExistsException {
-        if (userRepository.save(user) != null) {
-            return user;
-        } else {
-            throw new UserNotExistsException();
-        }
-    }*/
+    public User updateUser(Integer id, UpdateUserDto newUserData) throws RecordNotExistsException {
+        Optional<User> userById = userRepository.findById(id);
+        if(!userById.isPresent())
+            throw new RecordNotExistsException("Id provided is not exists on users data");
+        User updated = userById.get();
+        updated.updateUser(newUserData);
+        userRepository.updateUser(updated.getName(), updated.getLastname(), updated.getPassword(),
+                updated.getCity().getId(), updated.getUserType().toString(), updated.getUserStatus().toString(),
+                updated.getEmail());
+        return updated;
+    }
 
-    public MostCalledProjection getMostCalledFromUser(Integer userId) {
-        return userRepository.getMostCalledFromUser(userId);
+    public List<MostCalledProjection> getMostCalledFromUser(Integer userId, Integer size) throws InvalidRequestException {
+        List<MostCalledProjection> mostCalledFromUser = userRepository.getMostCalledFromUser(userId, size);
+        if (!isNull(mostCalledFromUser))
+            return mostCalledFromUser;
+        throw new InvalidRequestException("No user found with provided id");
     }
 }

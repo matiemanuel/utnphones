@@ -1,0 +1,71 @@
+{
+	"info": {
+		"_postman_id": "c5ce1d64-760e-4ff7-ab61-acafd5295a41",
+		"name": "utnphones-infrastructure",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "[CALL] ADD NEW",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{Authorization}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"origin\" : \"2234545456\",\r\n    \"destiny\" : \"2234444444\",\r\n    \"duration\" : 60\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{infrastructureUrl}}/",
+					"host": [
+						"{{infrastructureUrl}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[CALL] GET BY ID CALL",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{Authorization}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{infrastructureUrl}}/?id_call=0",
+					"host": [
+						"{{infrastructureUrl}}"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "id_call",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

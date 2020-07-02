@@ -1,0 +1,5 @@
+edu\utn\utnphones\controllers\UserControllerTests.class
+edu\utn\utnphones\controllers\BackOfficeControllerTests.class
+edu\utn\utnphones\controllers\UserWebControllerTests.class
+edu\utn\utnphones\controllers\InfrastructureControllerTests.class
+edu\utn\utnphones\controllers\LoginControllerTests.class

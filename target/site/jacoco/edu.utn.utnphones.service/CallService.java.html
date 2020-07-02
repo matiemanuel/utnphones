@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CallService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">utnphones</a> &gt; <a href="index.source.html" class="el_package">edu.utn.utnphones.service</a> &gt; <span class="el_source">CallService.java</span></div><h1>CallService.java</h1><pre class="source lang-java linenums">package edu.utn.utnphones.service;
+
+import edu.utn.utnphones.exceptions.InvalidRequestException;
+import edu.utn.utnphones.exceptions.RecordNotExistsException;
+import edu.utn.utnphones.model.Call;
+import edu.utn.utnphones.projections.CallsByDates;
+import edu.utn.utnphones.repository.CallRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+
+import static java.util.Objects.isNull;
+
+@Service
+public class CallService {
+
+    private final CallRepository callRepository;
+
+    @Autowired
+<span class="nc" id="L22">    public CallService(CallRepository callRepository) {</span>
+<span class="nc" id="L23">        this.callRepository = callRepository;</span>
+<span class="nc" id="L24">    }</span>
+
+
+    public Call addCall(String origin_number, String destiny_number, Integer duration) throws InvalidRequestException, RecordNotExistsException {
+<span class="nc" id="L28">        Integer id = callRepository.addCall(origin_number, destiny_number, duration);</span>
+<span class="nc bnc" id="L29" title="All 2 branches missed.">        if (id == null) {</span>
+<span class="nc" id="L30">            throw new InvalidRequestException(&quot;Call can not be created&quot;);</span>
+        }
+<span class="nc" id="L32">        return this.findById(id);</span>
+    }
+
+    public List&lt;Call&gt; getAll(String origin_number) {
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        if (isNull(origin_number)) {</span>
+<span class="nc" id="L37">            return callRepository.findAll();</span>
+        }
+<span class="nc" id="L39">        return callRepository.findbyOriginNumber(origin_number);</span>
+    }
+
+    public Call findById(Integer id) throws RecordNotExistsException {
+<span class="nc" id="L43">        return callRepository.findById(id).orElseThrow(() -&gt; new RecordNotExistsException(&quot;Id provided is not valid for a phoneline&quot;));</span>
+    }
+
+    public List&lt;CallsByDates&gt; getCallsByDates(Integer idUser, Date from, Date to) {
+<span class="nc" id="L47">        return callRepository.getCallsByDates(idUser, from, to);</span>
+    }
+
+    public List&lt;Call&gt; getCallsByUser(Integer idUser) {
+<span class="nc" id="L51">        return callRepository.getCallsByUser(idUser);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

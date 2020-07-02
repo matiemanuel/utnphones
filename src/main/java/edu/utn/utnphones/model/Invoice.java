@@ -43,7 +43,6 @@ public class Invoice {
     @JoinColumn(name = "fk_id_phone_line", referencedColumnName = "id_phone_line")
     private PhoneLine phoneline;
 
-
     @OneToMany(mappedBy = "invoice")
     private List<Call> calls;
 }
