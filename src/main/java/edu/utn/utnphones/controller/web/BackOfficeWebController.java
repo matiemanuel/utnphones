@@ -40,19 +40,19 @@ public class BackOfficeWebController {
     private final PhoneLineService phoneLineService;
     private final TariffService tariffService;
     private final InvoiceService invoiceService;
-    private final RestUtils rest;
+    private final RestUtils restUtils;
 
     @Autowired
     public BackOfficeWebController(UserService userService, CallService callService, PhoneLineService phoneLineService,
                                    TariffService tariffService, InvoiceService invoiceService, SessionManager sessionManager,
-                                   RestUtils rest) {
+                                   RestUtils restUtils) {
         this.userService = userService;
         this.sessionManager = sessionManager;
         this.callService = callService;
         this.tariffService = tariffService;
         this.phoneLineService = phoneLineService;
         this.invoiceService = invoiceService;
-        this.rest = rest;
+        this.restUtils = restUtils;
     }
 
     //USERS
@@ -61,7 +61,7 @@ public class BackOfficeWebController {
     @PostMapping("/user")
     public ResponseEntity<URI> newUser(@RequestHeader("Authorization") String sessionToken, @RequestBody User user)
             throws InvalidRequestException, RecordAlreadyExistsException {
-        return ResponseEntity.created(rest.getLocation(userService.addUser(user))).build();
+        return ResponseEntity.created(restUtils.getLocation(userService.addUser(user))).build();
     }
 
     @ResponseStatus(OK)
@@ -89,11 +89,11 @@ public class BackOfficeWebController {
 
     @ResponseStatus(OK)
     @PutMapping("/user")
-    public ResponseEntity<URI> updateUser(@RequestHeader("Authorization") String sessionToken,
+    public ResponseEntity<User> updateUser(@RequestHeader("Authorization") String sessionToken,
                                           @RequestParam(value = "userId", required = true) Integer userId,
                                           @RequestBody UpdateUserDto updatedUser) throws RecordNotExistsException, RecordAlreadyExistsException {
-        return ResponseEntity.status(OK).body(rest.getLocation(userService.updateUser(userId, updatedUser)));
-    } // todo no funciona
+        return ResponseEntity.status(OK).body(userService.updateUser(userId, updatedUser));
+    }
 
     //PHONELINES
 
@@ -107,7 +107,7 @@ public class BackOfficeWebController {
 
     @PostMapping("/phoneline")
     public ResponseEntity<URI> addPhoneline(@RequestHeader("Authorization") String sessionToken, @RequestBody PhoneLine phoneline) throws RecordAlreadyExistsException {
-        return ResponseEntity.created(rest.getLocation(phoneLineService.addPhoneLine(phoneline))).build();
+        return ResponseEntity.created(restUtils.getLocation(phoneLineService.addPhoneLine(phoneline))).build();
     }//todo correcciones
 
     @PutMapping("/phoneline")

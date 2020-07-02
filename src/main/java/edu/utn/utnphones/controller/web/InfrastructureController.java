@@ -16,12 +16,11 @@ import java.net.URI;
 @RequestMapping("/infrastructure")
 public class InfrastructureController {
 
-    @Autowired
     private CallService callService;
 
-    @Autowired
     private RestUtils restUtils;
 
+    @Autowired
     public InfrastructureController(CallService callService, RestUtils restUtils) {
         this.callService = callService;
         this.restUtils = restUtils;

@@ -1,0 +1,78 @@
+BUCKET_DATA : [
+{
+	"key" 	: "City::223",
+	"name" 	: "Mar del Plata",
+	"prefix" : 223,
+	"province" : "Buenos Aires",
+	"tariff" : [
+				{ "to" : "2262", "price" : 0.4 },
+				{ "to" : "223", "price" : 0.2 },
+			  ]
+},
+{
+	"key" : "User:franco",
+	"name" : "franco",
+    "lastName" : "ferreyra",
+    "email" : "francoferreyra4@hotmail.com",
+	"password" : "psw",
+	"dni" : "40424923",
+	"Type" : "client",
+	"city" : {
+				"name" : "Mar del Plata",
+				"province" : "Buenos Aires",
+			 },
+	"phonelines" : [
+					{
+					 "lineNumber" : "2236454545",
+					 "Type" : "residencial",
+                     "Status" : "active",
+					 "Calls": [
+					 			{ "destinyNumber" : "2262484789", "duration" : "10", "callDate" : "2020-06-08 12:50:00","totalPrice":7.5},
+					 			{ "destinyNumber" : "2232484789", "duration" : "10", "callDate" : "2020-06-09 12:50:00","totalPrice":3.5}
+					 		  ],
+					 "Invoices" : [
+					 			{"code" : "101", "numberOfCalls": 2, "priceCost": "49", "totalPrice": "90","invoiceDate":"2020-06-11","expirationDate":"2020-06-26","paid":"false"},
+					 			{"code" : "102", "numberOfCalls": 4, "priceCost": "98", "totalPrice": "130","invoiceDate":"2020-06-21","expirationDate":"2020-07-05","paid":"false"},
+					 		   ]
+					},
+					{
+					 "lineNumber" : "2236454599",
+					 "Type" : "residencial",
+                     "Status" : "active",
+					 "Calls": [
+
+					 			{ "destinyNumber" : "2232484789", "duration" : "22", "callDate" : "2020-06-10 12:50:00","totalPrice":5.5}
+					 		  ],
+					 "Invoices" : [
+					 			{"code" : "103", "numberOfCalls": 1, "priceCost": "49", "totalPrice": "90","invoiceDate":"2020-06-11","expirationDate":"2020-06-26","paid":"false"},
+					 		   ]
+					},
+				   ],
+	"Invoices": [
+				{"code" : "101", "lineNumber":"2236454545", "numberOfCalls": 2, "priceCost": "49", "totalPrice": "90","invoiceDate":"2020-06-11","expirationDate":"2020-06-26","paid":"false"},
+				{"code" : "102", "lineNumber": "2236454545", "numberOfCalls": 4, "priceCost": "98", "totalPrice": "130","invoiceDate":"2020-06-21","expirationDate":"2020-07-05","paid":"false"},
+				{"code" : "103", "lineNumber":"2236454599", "numberOfCalls": 1, "priceCost": "49", "totalPrice": "90","invoiceDate":"2020-06-11","expirationDate":"2020-06-26","paid":"false"}
+
+			 ]
+
+},
+{
+	"key" : "Call::2236454545",
+	"callTo" : "2262484789",
+	"dateCall" : "2020-06-08 12:05:00",
+	"price" : "20",
+	"user" : [ {"name" : "franco",	"lastname" : "ferreyra", "dni" : "40424923", "email": "francoferreyra4@hotmail.com"}]
+}
+{
+	"key" : "Invoices::101",
+	"numberLine" : "2236454545",
+	"user" : [ {"name" : "franco",	"lastname" : "ferreyra", "dni" : "40424923", "email": "francoferreyra4@hotmail.com"}],
+	"calls": [
+			  { "destinyNumber" : "2262484789", "duration" : "10", "callDate" : "2020-06-08 12:50:00","totalPrice":7.5},
+			  { "destinyNumber" : "2232484789", "duration" : "10", "callDate" : "2020-06-09 12:50:00","totalPrice":3.5}
+			 ],
+	"invoiceDate": "2020-06-11",
+	"expirationDate" : "2020-06-26",
+	"paid" : "false"
+}
+]

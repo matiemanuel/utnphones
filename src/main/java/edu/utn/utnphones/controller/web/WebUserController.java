@@ -37,21 +37,21 @@ public class WebUserController {
     private final InvoiceService invoiceService;
     private final UserService userService;
     private final SessionManager sessionManager;
-    private final RestUtils rest;
+    private final RestUtils restUtils;
 
     @Autowired
-    public WebUserController(CallService callService, InvoiceService invoiceService, UserService userService, SessionManager sessionManager, RestUtils rest) {
+    public WebUserController(CallService callService, InvoiceService invoiceService, UserService userService, SessionManager sessionManager, RestUtils restUtils) {
         this.callService = callService;
         this.invoiceService = invoiceService;
         this.userService = userService;
         this.sessionManager = sessionManager;
-        this.rest = rest;
+        this.restUtils = restUtils;
     }
 
     @PostMapping("/user")
     public ResponseEntity<URI> updateUser(@RequestHeader("Authorization") String sessionToken,
                                           @RequestBody UpdateUserDto updatedUser) throws RecordNotExistsException, RecordAlreadyExistsException {
-        return ResponseEntity.status(CREATED).body(rest.getLocation(userService.updateUser(sessionManager.getCurrentUser(sessionToken).getId(), updatedUser)));
+        return ResponseEntity.status(CREATED).body(restUtils.getLocation(userService.updateUser(sessionManager.getCurrentUser(sessionToken).getId(), updatedUser)));
     }
 
     @GetMapping("/calls")

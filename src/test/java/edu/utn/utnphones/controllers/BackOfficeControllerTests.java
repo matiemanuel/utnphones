@@ -178,7 +178,7 @@ public class BackOfficeControllerTests {
     @SneakyThrows
     @Test
     public void updateUser(){
-        ResponseEntity<URI> uriResponseEntity = backOfficeWebController.updateUser(token, 1, update);
+        ResponseEntity<User> uriResponseEntity = backOfficeWebController.updateUser(token, 1, update);
         assertEquals(SC_OK, uriResponseEntity.getStatusCodeValue());
     }
 

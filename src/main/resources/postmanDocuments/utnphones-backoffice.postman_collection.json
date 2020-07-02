@@ -1,0 +1,470 @@
+{
+	"info": {
+		"_postman_id": "23396d13-d54e-424a-9747-d597a10e0302",
+		"name": "utnphones-backoffice",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "[USER] GET ALL",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{Authorization}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{backOfficeUrl}}/users",
+					"host": [
+						"{{backOfficeUrl}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[USER] GET BY ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{Authorization}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{backOfficeUrl}}/user?userId=1",
+					"host": [
+						"{{backOfficeUrl}}"
+					],
+					"path": [
+						"user"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[USER] ADD",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{Authorization}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\" : \"Test\",\n\t\"lastname\" : \"Test\",\n\t\"dni\" : \"123123\",\n\t\"email\" : \"test@gmail.com\",\n\t\"password\" : \"1234\",\n\t\"city\" : {\n\t\t\"id\" : 1\n\t},\n\t\"userType\" : \"client\",\n\t\"userStatus\" : \"active\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{backOfficeUrl}}/user",
+					"host": [
+						"{{backOfficeUrl}}"
+					],
+					"path": [
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[USER] UPDATE",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{Authorization}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\" : \"Matias\",\n\t\"lastname\" : \"Test\",\n\t\"password\" : \"1234\",\n\t\"city\" : {\n\t\t\"id\" : 1\n\t},\n\t\"userType\" : \"client\",\n\t\"userStatus\" : \"active\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{backOfficeUrl}}/user?userId=5",
+					"host": [
+						"{{backOfficeUrl}}"
+					],
+					"path": [
+						"user"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[USER] DISABLE",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{Authorization}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{backOfficeUrl}}/user?userId=1",
+					"host": [
+						"{{backOfficeUrl}}"
+					],
+					"path": [
+						"user"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[PHONELINE] GET ALL",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{Authorization}}"
+					}
+				],
+				"url": {
+					"raw": "{{backOfficeUrl}}/phoneline",
+					"host": [
+						"{{backOfficeUrl}}"
+					],
+					"path": [
+						"phoneline"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[PHONELINE] GET BY ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{Authorization}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{backOfficeUrl}}/phoneline?id_phone_line=0",
+					"host": [
+						"{{backOfficeUrl}}"
+					],
+					"path": [
+						"phoneline"
+					],
+					"query": [
+						{
+							"key": "id_phone_line",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[PHONELINE] ADD",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{Authorization}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"lineNumber\" : \"123123123\",\n\t\"phoneLineStatus\" :  \"active/disabled/suspended\",\n\t\"phoneLineType\" : \"mobile/residential\",\n\t\"user\" : {\n\t\t\"id\" : 1\n\t},\n\t\"city\" : {\n\t\t\"id\" : 1\n\t}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{backOfficeUrl}}/phoneline",
+					"host": [
+						"{{backOfficeUrl}}"
+					],
+					"path": [
+						"phoneline"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[PHONELINE] MODIFY STATUS",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{Authorization}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"phoneLineId\" : 1,\n\t\"status\" : \"active/disabled/suspended\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{backOfficeUrl}}/phoneline",
+					"host": [
+						"{{backOfficeUrl}}"
+					],
+					"path": [
+						"phoneline"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[PHONELINE] DISABLE",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{Authorization}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{backOfficeUrl}}/phoneline?idPhoneLine=1",
+					"host": [
+						"{{backOfficeUrl}}"
+					],
+					"path": [
+						"phoneline"
+					],
+					"query": [
+						{
+							"key": "idPhoneLine",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[TARIFF] GET ALL",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{Authorization}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{backOfficeUrl}}/tariffs",
+					"host": [
+						"{{backOfficeUrl}}"
+					],
+					"path": [
+						"tariffs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[CALL] GET BY USER ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{Authorization}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{backOfficeUrl}}/calls?userId=0",
+					"host": [
+						"{{backOfficeUrl}}"
+					],
+					"path": [
+						"calls"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[CALL] GET BY USER ID AND DATES",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{Authorization}}"
+					}
+				],
+				"url": {
+					"raw": "{{backOfficeUrl}}/callsByDates?userId=0&from=01/01/2020&to=02/01/2020",
+					"host": [
+						"{{backOfficeUrl}}"
+					],
+					"path": [
+						"callsByDates"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "0"
+						},
+						{
+							"key": "from",
+							"value": "01/01/2020"
+						},
+						{
+							"key": "to",
+							"value": "02/01/2020"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[INVOICES] GET BY USER ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{Authorization}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{backOfficeUrl}}/invoices?userId=1",
+					"host": [
+						"{{backOfficeUrl}}"
+					],
+					"path": [
+						"invoices"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[INVOICES] GET BY USER ID AND DATES",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "{{Authorization}}"
+					}
+				],
+				"url": {
+					"raw": "{{backOfficeUrl}}/invoicesByDates?userId=1&from=01/01/2020&to=08/01/2020",
+					"host": [
+						"{{backOfficeUrl}}"
+					],
+					"path": [
+						"invoicesByDates"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "1"
+						},
+						{
+							"key": "from",
+							"value": "01/01/2020"
+						},
+						{
+							"key": "to",
+							"value": "08/01/2020"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

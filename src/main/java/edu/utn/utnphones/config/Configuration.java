@@ -3,6 +3,7 @@ package edu.utn.utnphones.config;
 import edu.utn.utnphones.session.SessionBackOfficeFilter;
 import edu.utn.utnphones.session.SessionFilter;
 import edu.utn.utnphones.session.SessionInfrastructureFilter;
+import edu.utn.utnphones.utils.RestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,11 @@ public class Configuration {
 
     @Autowired
     SessionFilter sessionUserFilter;
+
+    @Bean
+    public RestUtils getRestUtil(){
+        return new RestUtils();
+    }
 
     @Bean
     public FilterRegistrationBean userFilter() {
