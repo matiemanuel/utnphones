@@ -288,11 +288,11 @@ select cost into tariff_cost from tariffs where id_origin_city= origin_city_id a
 set total_price =  (p_duration * tariff_price);
 set date_call = (select now());
 	if (origin_city_id IS NULL or destiny_city_id IS NULL)
-		then signal sqlstate '01000' set MESSAGE_TEXT = 'Numero/s de telefono/s incompatible/s', MYSQL_ERRNO =  1000;
+		then signal sqlstate '45000' set MESSAGE_TEXT = 'Numero/s de telefono/s incompatible/s', MYSQL_ERRNO =  1000;
     elseif (LENGTH(p_destiny_phone) != 10 )
-		then signal sqlstate '01000' set MESSAGE_TEXT = 'El número de destino no cumple los requisitos', MYSQL_ERRNO =  1000;
+		then signal sqlstate '45000' set MESSAGE_TEXT = 'El número de destino no cumple los requisitos', MYSQL_ERRNO =  1000;
 	elseif( (select line_number from phone_lines where line_number = p_origin_phone) IS NULL )
-		then signal sqlstate '01000' set MESSAGE_TEXT = 'El número de origen no pertenece a ninguna linea telefónica', MYSQL_ERRNO =  1000;
+		then signal sqlstate '45000' set MESSAGE_TEXT = 'El número de origen no pertenece a ninguna linea telefónica', MYSQL_ERRNO =  1000;
     else
     insert into calls (duration, id_invoice, origin_number, destiny_number, tariff_price, tariff_cost, total_price, call_date)
 	values(p_duration, null, p_origin_phone, p_destiny_phone,tariff_price,
